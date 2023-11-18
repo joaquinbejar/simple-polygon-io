@@ -11,6 +11,8 @@
 
 namespace simple_polygon_io::tickers {
 
+    const std::string TICKERS_PATH = "/v3/reference/tickers";
+
     enum class Active {
         NONE = 0,
         TRUE = 1,
@@ -233,6 +235,8 @@ namespace simple_polygon_io::tickers {
 
         [[nodiscard]] std::map<std::string, std::string> get_params() const;
         [[nodiscard]] json get_json() const;
+        explicit operator std::map<std::string, std::string>() const ;
+
 
     };
 }

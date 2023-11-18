@@ -22,7 +22,7 @@ namespace simple_polygon_io::client {
         return *this;
     }
 
-    PolygonIOClient::PolygonIOClient(PolygonIOClient &&other) noexcept  : m_config(other.m_config) {
+    PolygonIOClient::PolygonIOClient(PolygonIOClient &&other) noexcept: m_config(other.m_config) {
 
     }
 
@@ -33,4 +33,21 @@ namespace simple_polygon_io::client {
     PolygonIOClient::~PolygonIOClient() {
 
     }
+
+    json PolygonIOClient::get_tickers(const TickersParams &params) const {
+
+//            json tickers;
+//            try {
+//                std::vector<json> response = this->get_jsons(TICKERS_PATH, params);
+//                for (auto &ticker: response) {
+//
+//                }
+//            } catch (std::exception &e) {
+//                logger->log_error("Error getting tickers: " + std::string(e.what()));
+//            }
+//            return tickers;
+
+        return {};
+    }
+
 }

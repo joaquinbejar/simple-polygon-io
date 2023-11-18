@@ -58,6 +58,10 @@ namespace simple_polygon_io::tickers {
         return params;
     }
 
+    TickersParams::operator std::map<std::string, std::string>() const {
+        return get_params();
+    }
+
     json TickersParams::get_json() const {
         return json(get_params());
     }

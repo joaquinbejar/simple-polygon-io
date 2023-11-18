@@ -7,17 +7,33 @@
 #include <string>
 #include <simple_polygon_io/tickers.h>
 
+using namespace simple_polygon_io::tickers;
 
-// ---------------------------------------------------------------------------------------------------
+TEST_CASE("Operator std::map ", "[tickers]") {
+    SECTION("Active Enum") {
+        TickersParams params;
+        // Set some values in params
+        params.set_ticker("ABC");
+        params.set_type(TickerType::CS);
+        params.set_market(Market::STOCKS);
+        params.set_exchange(Exchange::XNAS);
+        params.set_cusip("cusip");
+        params.set_cik("cik");
+        params.set_date("date");
+        params.set_search("search");
+        params.set_active(Active::TRUE);
+        params.set_order(OrderBy::ASC);
+        params.set_limit(1001);
+        params.set_sort(TickerSortBy::TICKER);
 
-
-TEST_CASE("Testing Tickers", "[tickers]") {
-    SECTION("Fail connection to localhost") {
+        std::map<std::string, std::string> params_map = (std::map<std::string, std::string>)params;
+        REQUIRE(params_map["ticker"] == "ABC");
+        REQUIRE(params_map["type"] == "CS");
+        REQUIRE(params_map["market"] == "stocks");
+        // etc...
 
     }
 }
-
-using namespace simple_polygon_io::tickers;
 
 TEST_CASE("Enum to String Conversion Tests", "[tickers]") {
     SECTION("Active Enum") {

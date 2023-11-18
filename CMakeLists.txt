@@ -15,10 +15,12 @@ set(SIMPLE_POLYGON_IO_SOURCE_FILES
         include/simple_polygon_io/config.h
         include/simple_polygon_io/exceptions.h
         include/simple_polygon_io/tickers.h
+        include/simple_polygon_io/http.h
         src/config.cpp
         src/client.cpp
         src/exceptions.cpp
         src/tickers.cpp
+        src/http.cpp
 )
 
 add_library(simple_polygon_io STATIC ${SIMPLE_POLYGON_IO_SOURCE_FILES})
@@ -38,6 +40,7 @@ target_include_directories(simple_polygon_io PUBLIC
         ${SIMPLE_LOGGER_INCLUDE}
         ${NLOHMANN_JSON_INCLUDE}
         ${COMMON_INCLUDE}
+        ${CURL_INCLUDE}
 )
 
 target_link_libraries(simple_polygon_io
@@ -46,6 +49,7 @@ target_link_libraries(simple_polygon_io
         simple_config
         simple_logger
         common
+        libcurl_shared
 )
 
 set(SIMPLE_POLYGON_IO_TESTS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
