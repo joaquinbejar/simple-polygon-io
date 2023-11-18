@@ -4,21 +4,47 @@
 
 #include "simple_polygon_io/config.h"
 #include <catch2/catch_test_macros.hpp>
+#include "simple_logger/logger.h"
+
+using namespace simple_polygon_io::config;
+
+TEST_CASE("PolygonIOConfig Tests", "[PolygonIOConfig]") {
+    PolygonIOConfig config;
+
+    SECTION("Default Configuration") {
+        REQUIRE(config.get_api_url() == "https://api.polygon.io");
+        REQUIRE(config.get_api_key().empty());
+    }
+
+    SECTION("Validate with default settings") {
+        REQUIRE_FALSE(config.validate());
+    }
 
 
-// ---------------------------------------------------------------------------------------------------
-TEST_CASE("Declare PolygonIOConfig", "[PolygonIOConfig]") {
+    SECTION("from_json method") {
+        json j;
+        j["m_polygon_api_url"] = "https://api.fromjson.com";
+        j["m_polygon_api_key"] = "jsonkey123";
 
-}
+        config.from_json(j);
 
-TEST_CASE("Declare PolygonIOConfig with env variables", "[PolygonIOConfig]") {
+        REQUIRE(config.get_api_url() == "https://api.fromjson.com");
+        REQUIRE(config.get_api_key() == "jsonkey123");
+    }
 
-}
+    SECTION("to_string method") {
+        std::string expected_str = "PolygonIOConfig { m_polygon_api_url='https://api.polygon.io', m_polygon_api_key=''}";
+        REQUIRE(config.to_string() == expected_str);
+    }
 
-TEST_CASE("Declare PolygonIOConfig with env variables full valid", "[PolygonIOConfig]") {
+    SECTION("from_json method and key as param") {
+        json j;
+        j["m_polygon_api_url"] = "https://api.fromjson.com";
+        j["m_polygon_api_key"] = "jsonkey123";
 
-}
+        config.from_json(j);
 
-TEST_CASE("Use Logger", "[PolygonIOConfig]") {
-
+        REQUIRE(config.get_api_url() == "https://api.fromjson.com");
+        REQUIRE(config.get_api_key_as_param() == "apiKey=jsonkey123");
+    }
 }

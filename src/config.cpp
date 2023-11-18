@@ -70,4 +70,16 @@ namespace simple_polygon_io::config {
                ", m_polygon_api_key='" + m_polygon_api_key + '\'' +
                '}';
     }
+
+    std::string PolygonIOConfig::get_api_url() const {
+        return m_polygon_api_url;
+    }
+
+    std::string PolygonIOConfig::get_api_key() const {
+        return m_polygon_api_key;
+    }
+
+    std::string PolygonIOConfig::get_api_key_as_param() const {
+        return "apiKey=" + m_polygon_api_key;
+    }
 }
