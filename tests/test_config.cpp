@@ -7,18 +7,18 @@
 
 
 // ---------------------------------------------------------------------------------------------------
-TEST_CASE("Declare MariaDBConfig", "[MariaDBConfig]") {
+TEST_CASE("Declare PolygonIOConfig", "[PolygonIOConfig]") {
 
 }
 
-TEST_CASE("Declare MariaDBConfig with env variables", "[MariaDBConfig]") {
+TEST_CASE("Declare PolygonIOConfig with env variables", "[PolygonIOConfig]") {
 
 }
 
-TEST_CASE("Declare MariaDBConfig with env variables full valid", "[MariaDBConfig]") {
+TEST_CASE("Declare PolygonIOConfig with env variables full valid", "[PolygonIOConfig]") {
 
 }
 
-TEST_CASE("Use Logger", "[MariaDBConfig]") {
+TEST_CASE("Use Logger", "[PolygonIOConfig]") {
 
 }
