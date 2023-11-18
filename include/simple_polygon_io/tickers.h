@@ -7,6 +7,7 @@
 
 #include <string>
 #include <map>
+#include "common/common.h"
 
 namespace simple_polygon_io::tickers {
 
@@ -190,6 +191,10 @@ namespace simple_polygon_io::tickers {
         OrderBy m_order = OrderBy::NONE;
         size_t m_limit = 0;
         TickerSortBy m_sort = TickerSortBy::NONE;
+        std::string m_ticker_gte;
+        std::string m_ticker_gt;
+        std::string m_ticker_lte;
+        std::string m_ticker_lt;
 
     public:
         void set_ticker(const std::string &ticker);
@@ -204,7 +209,15 @@ namespace simple_polygon_io::tickers {
         void set_order(OrderBy order);
         void set_limit(size_t limit);
         void set_sort(TickerSortBy sort);
+        void set_ticker_gte(const std::string &ticker_gte);
+        void set_ticker_gt(const std::string &ticker_gt);
+        void set_ticker_lte(const std::string &ticker_lte);
+        void set_ticker_lt(const std::string &ticker_lt);
 
+        [[nodiscard]] const std::string &get_ticker_gte() const;
+        [[nodiscard]] const std::string &get_ticker_gt() const;
+        [[nodiscard]] const std::string &get_ticker_lte() const;
+        [[nodiscard]] const std::string &get_ticker_lt() const;
         [[nodiscard]] const std::string &get_ticker() const;
         [[nodiscard]] TickerType get_type() const;
         [[nodiscard]] Market get_market() const;
@@ -218,8 +231,8 @@ namespace simple_polygon_io::tickers {
         [[nodiscard]] size_t get_limit() const;
         [[nodiscard]] TickerSortBy get_sort() const;
 
-
         [[nodiscard]] std::map<std::string, std::string> get_params() const;
+        [[nodiscard]] json get_json() const;
 
     };
 }

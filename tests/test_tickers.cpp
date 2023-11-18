@@ -112,7 +112,7 @@ TEST_CASE("TickersParams Tests", "[tickers]") {
     params.set_search("search");
     params.set_active(Active::TRUE);
     params.set_order(OrderBy::ASC);
-    params.set_limit(10);
+    params.set_limit(1001);
     params.set_sort(TickerSortBy::TICKER);
 
     auto params_map = params.get_params();
@@ -128,7 +128,7 @@ TEST_CASE("TickersParams Tests", "[tickers]") {
         REQUIRE(params_map["search"] == "search");
         REQUIRE(params_map["active"] == "true");
         REQUIRE(params_map["order"] == "asc");
-        REQUIRE(params_map["limit"] == "10");
+        REQUIRE(params_map["limit"] == "1000"); // 1000 is the max value
         REQUIRE(params_map["sort"] == "ticker");
     }
 
@@ -143,7 +143,7 @@ TEST_CASE("TickersParams Tests", "[tickers]") {
         REQUIRE(params.get_search() == "search");
         REQUIRE(params.get_active() == Active::TRUE);
         REQUIRE(params.get_order() == OrderBy::ASC);
-        REQUIRE(params.get_limit() == 10);
+        REQUIRE(params.get_limit() == 1000);
         REQUIRE(params.get_sort() == TickerSortBy::TICKER);
     }
 }
@@ -236,5 +236,39 @@ TEST_CASE("TickersParams Empty Tests", "[tickers]") {
         params_map = params.get_params();
         REQUIRE(params_map.size() == 12);
         REQUIRE(params_map["sort"] == "ticker");
+    }
+}
+
+TEST_CASE("TickersParams GTE GT LTE LT", "[tickers]") {
+
+    SECTION("Check parameters map") {
+        TickersParams params;
+        auto params_map = params.get_params();
+        REQUIRE(params_map.empty());
+
+        params.set_ticker("AAPL");
+        REQUIRE(params.get_ticker() == "AAPL");
+        params_map = params.get_params();
+        REQUIRE(params_map.size() == 1);
+
+        params.set_ticker_gte("A");
+        params_map = params.get_params();
+        REQUIRE(params_map.size() == 1);
+        REQUIRE(params.get_ticker_gte() == "A");
+
+        params.set_ticker_gt("B");
+        params_map = params.get_params();
+        REQUIRE(params_map.size() == 1);
+        REQUIRE(params.get_ticker_gt() == "B");
+
+        params.set_ticker_lte("C");
+        params_map = params.get_params();
+        REQUIRE(params_map.size() == 2);
+        REQUIRE(params.get_ticker_lte() == "C");
+
+        params.set_ticker("AAPL");
+        REQUIRE(params.get_ticker() == "AAPL");
+        params_map = params.get_params();
+        REQUIRE(params_map.size() == 1);
     }
 }

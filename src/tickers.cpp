@@ -43,6 +43,10 @@ namespace simple_polygon_io::tickers {
         params["order"] = get_order_by_name(m_order);
         params["limit"] = m_limit != 0 ? std::to_string(m_limit) : "";
         params["sort"] = get_ticker_sort_by_name(m_sort);
+        params["ticker.gte"] = m_ticker_gte;
+        params["ticker.gt"] = m_ticker_gt;
+        params["ticker.lte"] = m_ticker_lte;
+        params["ticker.lt"] = m_ticker_lt;
 //        remove params with empty values
         for (auto it = params.begin(); it != params.end();) {
             if (it->second.empty()) {
@@ -54,8 +58,18 @@ namespace simple_polygon_io::tickers {
         return params;
     }
 
+    json TickersParams::get_json() const {
+        return json(get_params());
+    }
+
     void TickersParams::set_ticker(const std::string &ticker) {
         m_ticker = common::to_upper(ticker);
+        if (!ticker.empty()) {
+            this->m_ticker_gte = "";
+            this->m_ticker_gt = "";
+            this->m_ticker_lte = "";
+            this->m_ticker_lt = "";
+        }
     }
 
     void TickersParams::set_type(TickerType type) {
@@ -95,6 +109,9 @@ namespace simple_polygon_io::tickers {
     }
 
     void TickersParams::set_limit(size_t limit) {
+        if (limit > 1000) {
+            limit = 1000;
+        }
         m_limit = limit;
     }
 
@@ -102,51 +119,101 @@ namespace simple_polygon_io::tickers {
         m_sort = sort;
     }
 
-    [[nodiscard]] const std::string &TickersParams::get_ticker() const {
+    void TickersParams::set_ticker_gte(const std::string &ticker_gte) {
+        m_ticker_gte = ticker_gte;
+        if (!ticker_gte.empty()) {
+            this->m_ticker_gt = "";
+            this->m_ticker = "";
+        }
+    }
+
+    void TickersParams::set_ticker_gt(const std::string &ticker_gt) {
+        m_ticker_gt = ticker_gt;
+        if (!ticker_gt.empty()) {
+            this->m_ticker_gte = "";
+            this->m_ticker = "";
+        }
+    }
+
+    void TickersParams::set_ticker_lte(const std::string &ticker_lte) {
+        m_ticker_lte = ticker_lte;
+        if (!ticker_lte.empty()) {
+            this->m_ticker_lt = "";
+            this->m_ticker = "";
+        }
+    }
+
+    void TickersParams::set_ticker_lt(const std::string &ticker_lt) {
+        m_ticker_lt = ticker_lt;
+        if (!ticker_lt.empty()) {
+            this->m_ticker_lte = "";
+            this->m_ticker = "";
+        }
+    }
+
+    const std::string &TickersParams::get_ticker_gte() const {
+        return m_ticker_gte;
+    }
+
+    const std::string &TickersParams::get_ticker_gt() const {
+        return m_ticker_gt;
+    }
+
+    const std::string &TickersParams::get_ticker_lte() const {
+        return m_ticker_lte;
+    }
+
+    const std::string &TickersParams::get_ticker_lt() const {
+        return m_ticker_lt;
+    }
+
+    const std::string &TickersParams::get_ticker() const {
         return m_ticker;
     }
 
-    [[nodiscard]] TickerType TickersParams::get_type() const {
+    TickerType TickersParams::get_type() const {
         return m_type;
     }
 
-    [[nodiscard]] Market TickersParams::get_market() const {
+    Market TickersParams::get_market() const {
         return m_market;
     }
 
-    [[nodiscard]] Exchange TickersParams::get_exchange() const {
+    Exchange TickersParams::get_exchange() const {
         return m_exchange;
     }
 
-    [[nodiscard]] const std::string &TickersParams::get_cusip() const {
+    const std::string &TickersParams::get_cusip() const {
         return m_cusip;
     }
 
-    [[nodiscard]] const std::string &TickersParams::get_cik() const {
+    const std::string &TickersParams::get_cik() const {
         return m_cik;
     }
 
-    [[nodiscard]] const std::string &TickersParams::get_date() const {
+    const std::string &TickersParams::get_date() const {
         return m_date;
     }
 
-    [[nodiscard]] const std::string &TickersParams::get_search() const {
+    const std::string &TickersParams::get_search() const {
         return m_search;
     }
 
-    [[nodiscard]] Active TickersParams::get_active() const {
+    Active TickersParams::get_active() const {
         return m_active;
     }
 
-    [[nodiscard]] OrderBy TickersParams::get_order() const {
+    OrderBy TickersParams::get_order() const {
         return m_order;
     }
 
-    [[nodiscard]] size_t TickersParams::get_limit() const {
+    size_t TickersParams::get_limit() const {
         return m_limit;
     }
 
-    [[nodiscard]] TickerSortBy TickersParams::get_sort() const {
+    TickerSortBy TickersParams::get_sort() const {
         return m_sort;
     }
+
+
 }
