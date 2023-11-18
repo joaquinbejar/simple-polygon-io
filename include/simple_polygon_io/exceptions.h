@@ -1,0 +1,8 @@
+//
+// Created by Joaquin Bejar Garcia on 18/11/23.
+//
+
+#ifndef SIMPLE_POLYGON_IO_EXCEPTIONS_H
+#define SIMPLE_POLYGON_IO_EXCEPTIONS_H
+
+#endif //SIMPLE_POLYGON_IO_EXCEPTIONS_H

@@ -45,3 +45,22 @@ target_link_libraries(test_config PRIVATE
         common
         simple_polygon_io
 )
+
+add_executable(test_tickers test_tickers.cpp)
+target_include_directories(test_tickers
+        PRIVATE
+        ${SIMPLE_POLYGON_IO_INCLUDE}
+        ${SIMPLE_COLOR_INCLUDE}
+        ${SIMPLE_CONFIG_INCLUDE}
+        ${SIMPLE_LOGGER_INCLUDE}
+        ${NLOHMANN_JSON_INCLUDE}
+        ${COMMON_INCLUDE}
+)
+
+target_link_libraries(test_tickers PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(test_tickers PRIVATE
+        simple_logger
+        simple_config
+        common
+        simple_polygon_io
+)

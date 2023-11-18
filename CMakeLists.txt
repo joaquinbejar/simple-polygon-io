@@ -13,8 +13,12 @@ set(SIMPLE_POLYGON_IO_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(SIMPLE_POLYGON_IO_SOURCE_FILES
         include/simple_polygon_io/client.h
         include/simple_polygon_io/config.h
+        include/simple_polygon_io/exceptions.h
+        include/simple_polygon_io/tickers.h
         src/config.cpp
         src/client.cpp
+        src/exceptions.cpp
+        src/tickers.cpp
 )
 
 add_library(simple_polygon_io STATIC ${SIMPLE_POLYGON_IO_SOURCE_FILES})
