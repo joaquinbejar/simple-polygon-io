@@ -7,6 +7,7 @@
 
 #include <simple_polygon_io/config.h>
 #include <simple_polygon_io/tickers.h>
+#include <simple_polygon_io/exceptions.h>
 
 namespace simple_polygon_io::client {
 

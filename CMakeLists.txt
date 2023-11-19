@@ -8,6 +8,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
 include(cmake/simple_logger.cmake)
 include(cmake/curl.cmake)
 
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_compile_definitions(NDEBUG)
+endif()
 
 set(SIMPLE_POLYGON_IO_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(SIMPLE_POLYGON_IO_SOURCE_FILES

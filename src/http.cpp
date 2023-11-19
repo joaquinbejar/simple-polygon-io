@@ -104,9 +104,9 @@ namespace simple_polygon_io::http {
             params_copy["apiKey"] = m_api_key;
             std::string full_url = m_set_params(this->m_base_url + path_params.path, params_copy);
             CURL *curl = curl_easy_init();
-
+#ifndef NDEBUG
             logger->send<simple_logger::LogLevel::DEBUG>("HTTPClient::m_get_json: " + full_url); // DEBUG
-
+#endif
             // Set remote URL.
             curl_easy_setopt(curl, CURLOPT_URL, full_url.c_str());
 
