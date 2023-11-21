@@ -58,5 +58,7 @@ target_link_libraries(simple_polygon_io
 set(SIMPLE_POLYGON_IO_TESTS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 option(NO_POLYGON_IO_TESTS "simple_polygon_io Disable simple_polygon_io tests" OFF)
 if (NOT NO_POLYGON_IO_TESTS)
+#    set -DCURL_DISABLE_TESTS=ON to disable curl tests
+    set(CURL_DISABLE_TESTS ON)
     add_subdirectory(tests)
 endif ()
