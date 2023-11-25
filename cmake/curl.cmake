@@ -2,6 +2,7 @@ include(FetchContent)
 FetchContent_Declare(curl
         GIT_REPOSITORY https://github.com/curl/curl.git
         GIT_TAG curl-8_4_0
+        CMAKE_ARGS -DBUILD_SHARED_LIBS=ON
         )
 FetchContent_MakeAvailable(curl)
 
