@@ -27,9 +27,9 @@ namespace simple_polygon_io::config {
         std::string m_polygon_api_key = common::get_env_variable_string("POLYGON_API_KEY", "");
 
     public:
-        std::string get_api_url() const ;
-        std::string get_api_key() const ;
-        std::string get_api_key_as_param() const ;
+        [[nodiscard]] std::string get_api_url() const ;
+        [[nodiscard]] std::string get_api_key() const ;
+        [[nodiscard]] std::string get_api_key_as_param() const ;
 
         // add a logger to the config
         std::shared_ptr<simple_logger::Logger> logger = std::make_shared<simple_logger::Logger>(loglevel);
