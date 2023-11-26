@@ -509,3 +509,89 @@ TEST_CASE("Json to Result incomplete ticker", "[tickers]") {
     REQUIRE(response.error_found);
     REQUIRE(response.error_message == "Missed results in response: 1 != 2");
 }
+
+TEST_CASE("Json to Result Query", "[tickers]") {
+    json j = R"({
+    "count": 1,
+    "request_id": "a4bc71c604d135a100af5387bc460dda",
+    "results": [
+        {
+            "active": true,
+            "cik": "0001090872",
+            "composite_figi": "BBG000C2V3D6",
+            "currency_name": "usd",
+            "last_updated_utc": "2023-11-24T00:00:00Z",
+            "locale": "us",
+            "market": "stocks",
+            "name": "Agilent Technologies Inc.",
+            "primary_exchange": "XNYS",
+            "share_class_figi": "BBG001SCTQY4",
+            "ticker": "A",
+            "type": "CS"
+        }
+    ],
+    "status": "OK"
+})"_json;
+
+    JsonResponse response = JsonResponse(j);
+    REQUIRE(response.status == "OK");
+    REQUIRE(response.request_id == "a4bc71c604d135a100af5387bc460dda");
+    REQUIRE(response.error_found == false);
+//    std::cout << response.error_message << std::endl;
+    REQUIRE(response.error_message.empty());
+    REQUIRE(response.count == 1);
+    Result result = response.results[0];
+    REQUIRE(result.active == Active::TRUE);
+    std::string query_result = R"(INSERT INTO table (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', '0001090872', 'BBG000C2V3D6', 'usd', '2023-11-24T00:00:00Z', 'us', 'stocks', 'Agilent Technologies Inc.', 'XNYS', 'BBG001SCTQY4', 'A', 'CS');)";
+    REQUIRE(result.query("table") == query_result);
+}
+
+TEST_CASE("JsonResponse to Queries", "[tickers]") {
+    json j = R"({
+    "count": 2,
+    "request_id": "a4bc71c604d135a100af5387bc460dda",
+    "results": [
+        {
+            "active": true,
+            "cik": "0001090872",
+            "composite_figi": "BBG000C2V3D6",
+            "currency_name": "usd",
+            "last_updated_utc": "2023-11-24T00:00:00Z",
+            "locale": "us",
+            "market": "stocks",
+            "name": "Agilent Technologies Inc.",
+            "primary_exchange": "XNYS",
+            "share_class_figi": "BBG001SCTQY4",
+            "ticker": "A",
+            "type": "CS"
+        },
+        {
+            "active": true,
+            "cik": "0001675149",
+            "composite_figi": "BBG00B3T3HD3",
+            "currency_name": "usd",
+            "last_updated_utc": "2023-11-24T00:00:00Z",
+            "locale": "us",
+            "market": "stocks",
+            "name": "Alcoa Corporation",
+            "primary_exchange": "XNYS",
+            "share_class_figi": "BBG00B3T3HF1",
+            "ticker": "AA",
+            "type": "CS"
+        }
+    ],
+    "status": "OK"
+})"_json;
+
+    JsonResponse response = JsonResponse(j);
+    REQUIRE(response.status == "OK");
+    REQUIRE(response.request_id == "a4bc71c604d135a100af5387bc460dda");
+    REQUIRE(response.error_found == false);
+    REQUIRE(response.error_message.empty());
+    REQUIRE(response.count == 2);
+    Queries queries = response.queries("table");
+    Query query1 = queries[0];
+    REQUIRE(query1 == R"(INSERT INTO table (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', '0001090872', 'BBG000C2V3D6', 'usd', '2023-11-24T00:00:00Z', 'us', 'stocks', 'Agilent Technologies Inc.', 'XNYS', 'BBG001SCTQY4', 'A', 'CS');)");
+    Query query2 = queries[1];
+    REQUIRE(query2 == R"(INSERT INTO table (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', '0001675149', 'BBG00B3T3HD3', 'usd', '2023-11-24T00:00:00Z', 'us', 'stocks', 'Alcoa Corporation', 'XNYS', 'BBG00B3T3HF1', 'AA', 'CS');)");
+}

@@ -243,6 +243,9 @@ namespace simple_polygon_io::tickers {
 
     };
 
+    typedef std::string Query;
+    typedef std::vector<std::string> Queries;
+
     struct Result {
         Active active;
         std::string cik;
@@ -258,6 +261,8 @@ namespace simple_polygon_io::tickers {
         TickerType type;
 
         explicit Result(const json& j);
+
+        [[nodiscard]] Query query(const std::string &table) const;
     };
 
     struct JsonResponse {
@@ -268,6 +273,7 @@ namespace simple_polygon_io::tickers {
         bool error_found = false;
         std::string error_message;
         explicit JsonResponse(const json& j);
+        Queries queries(const std::string &table) const;
     };
 }
 #endif //SIMPLE_POLYGON_IO_TICKERS_H

@@ -284,6 +284,25 @@ namespace simple_polygon_io::tickers {
         primary_exchange = get_exchange_from_string(s_exchange);
     }
 
+    Query Result::query(const std::string &table) const {
+        std::stringstream query;
+        query << "INSERT INTO " + table + " (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, "
+                 "`locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ("
+              << "'" << get_active_name(active) << "', "
+              << "'" << cik << "', "
+              << "'" << composite_figi << "', "
+              << "'" << currency_name << "', "
+              << "'" << last_updated_utc << "', "
+              << "'" << locale << "', "
+              << "'" << get_market_name(market) << "', "
+              << "'" << name << "', "
+              << "'" << get_exchange_name(primary_exchange) << "', "
+              << "'" << share_class_figi << "', "
+              << "'" << ticker << "', "
+              << "'" << get_ticker_type_name(type) << "');";
+        return query.str();
+    }
+
     JsonResponse::JsonResponse(const json &j) {
         j.at("request_id").get_to(request_id);
         for (const auto &result_json: j.at("results")) {
@@ -305,6 +324,14 @@ namespace simple_polygon_io::tickers {
                                 std::to_string(j.at("count").get<size_t>());
             }
         }
+    }
+
+    Queries JsonResponse::queries(const std::string &table) const {
+        Queries queries;
+        for (const auto &result: results) {
+            queries.emplace_back(result.query(table));
+        }
+        return queries;
     }
 
 }
