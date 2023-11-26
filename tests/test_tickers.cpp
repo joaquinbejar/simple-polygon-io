@@ -288,3 +288,224 @@ TEST_CASE("TickersParams GTE GT LTE LT", "[tickers]") {
         REQUIRE(params_map.size() == 1);
     }
 }
+
+TEST_CASE("Json to Result", "[tickers]") {
+    json j = R"({
+    "count": 10,
+    "request_id": "a4bc71c604d135a100af5387bc460dda",
+    "results": [
+        {
+            "active": true,
+            "cik": "0001090872",
+            "composite_figi": "BBG000C2V3D6",
+            "currency_name": "usd",
+            "last_updated_utc": "2023-11-24T00:00:00Z",
+            "locale": "us",
+            "market": "stocks",
+            "name": "Agilent Technologies Inc.",
+            "primary_exchange": "XNYS",
+            "share_class_figi": "BBG001SCTQY4",
+            "ticker": "A",
+            "type": "CS"
+        },
+        {
+            "active": true,
+            "cik": "0001675149",
+            "composite_figi": "BBG00B3T3HD3",
+            "currency_name": "usd",
+            "last_updated_utc": "2023-11-24T00:00:00Z",
+            "locale": "us",
+            "market": "stocks",
+            "name": "Alcoa Corporation",
+            "primary_exchange": "XNYS",
+            "share_class_figi": "BBG00B3T3HF1",
+            "ticker": "AA",
+            "type": "CS"
+        },
+        {
+            "active": true,
+            "cik": "0001776878",
+            "composite_figi": "BBG01B0JRCS6",
+            "currency_name": "usd",
+            "last_updated_utc": "2023-11-24T00:00:00Z",
+            "locale": "us",
+            "market": "stocks",
+            "name": "AXS First Priority CLO Bond ETF",
+            "primary_exchange": "ARCX",
+            "share_class_figi": "BBG01B0JRCT5",
+            "ticker": "AAA",
+            "type": "ETF"
+        },
+        {
+            "active": true,
+            "currency_name": "USD",
+            "last_updated_utc": "2022-08-26T05:00:07.114Z",
+            "locale": "us",
+            "market": "otc",
+            "name": "ALTERNATIVE INVSTMENT TR",
+            "ticker": "AAAIF",
+            "type": "FUND"
+        },
+        {
+            "active": true,
+            "currency_name": "USD",
+            "last_updated_utc": "2022-04-01T06:49:22.884Z",
+            "locale": "us",
+            "market": "otc",
+            "name": "AAREAL BANK AG AKT",
+            "ticker": "AAALF",
+            "type": "OS"
+        },
+        {
+            "active": true,
+            "composite_figi": "BBG002628DF1",
+            "currency_name": "USD",
+            "last_updated_utc": "2023-05-04T05:00:29.876Z",
+            "locale": "us",
+            "market": "otc",
+            "name": "AAREAL BANK AG UNSP/ADR",
+            "share_class_figi": "BBG002628F57",
+            "ticker": "AAALY",
+            "type": "ADRC"
+        },
+        {
+            "active": true,
+            "cik": "0001708646",
+            "composite_figi": "BBG00LPXX872",
+            "currency_name": "usd",
+            "last_updated_utc": "2023-11-24T00:00:00Z",
+            "locale": "us",
+            "market": "stocks",
+            "name": "Goldman Sachs Physical Gold ETF Shares",
+            "primary_exchange": "BATS",
+            "share_class_figi": "BBG00LPXX8Z1",
+            "ticker": "AAAU",
+            "type": "ETF"
+        },
+        {
+            "active": true,
+            "composite_figi": "BBG000CWNRN5",
+            "currency_name": "USD",
+            "last_updated_utc": "2023-04-17T05:00:24.252Z",
+            "locale": "us",
+            "market": "otc",
+            "name": "ASIA BROADBAND INC",
+            "share_class_figi": "BBG001SGRBK5",
+            "ticker": "AABB",
+            "type": "CS"
+        },
+        {
+            "active": true,
+            "composite_figi": "BBG000BXKHJ4",
+            "currency_name": "USD",
+            "last_updated_utc": "2023-05-10T05:00:36.305Z",
+            "locale": "us",
+            "market": "otc",
+            "name": "ABERDEEN INTL INC",
+            "share_class_figi": "BBG001S6XZ90",
+            "ticker": "AABVF",
+            "type": "OS"
+        },
+        {
+            "active": true,
+            "currency_name": "USD",
+            "last_updated_utc": "2022-06-24T14:14:05.429Z",
+            "locale": "us",
+            "market": "otc",
+            "name": "AAC TECHS HLDGS INC ORD",
+            "ticker": "AACAF",
+            "type": "OS"
+        }
+    ],
+    "status": "OK"
+})"_json;
+
+    JsonResponse response = JsonResponse(j);
+    REQUIRE(response.status == "OK");
+    REQUIRE(response.count == 10);
+    REQUIRE(response.request_id == "a4bc71c604d135a100af5387bc460dda");
+    for (auto &result: response.results) {
+        REQUIRE_FALSE(result.ticker.empty());
+        REQUIRE_FALSE(result.name.empty());
+        REQUIRE_FALSE(result.last_updated_utc.empty());
+    }
+    Result result = response.results[0];
+    /*
+        {
+            "active": true,
+            "cik": "0001090872",
+            "composite_figi": "BBG000C2V3D6",
+            "currency_name": "usd",
+            "last_updated_utc": "2023-11-24T00:00:00Z",
+            "locale": "us",
+            "market": "stocks",
+            "name": "Agilent Technologies Inc.",
+            "primary_exchange": "XNYS",
+            "share_class_figi": "BBG001SCTQY4",
+            "ticker": "A",
+            "type": "CS"
+        },
+     */
+    REQUIRE(result.active == Active::TRUE);
+    REQUIRE(result.cik == "0001090872");
+    REQUIRE(result.composite_figi == "BBG000C2V3D6");
+    REQUIRE(result.currency_name == "usd");
+    REQUIRE(result.last_updated_utc == "2023-11-24T00:00:00Z");
+    REQUIRE(result.locale == "us");
+    REQUIRE(result.market == Market::STOCKS);
+    REQUIRE(result.name == "Agilent Technologies Inc.");
+    REQUIRE(result.primary_exchange == Exchange::XNYS);
+    REQUIRE(result.share_class_figi == "BBG001SCTQY4");
+    REQUIRE(result.ticker == "A");
+    REQUIRE(result.type == TickerType::CS);
+
+    REQUIRE(response.error_found == false);
+    REQUIRE(response.error_message.empty());
+}
+
+TEST_CASE("Json to Result incomplete ticker", "[tickers]") {
+    json j = R"({
+    "count": 2,
+    "request_id": "a4bc71c604d135a100af5387bc460dda",
+    "results": [
+        {
+            "active": true,
+            "cik": "0001090872",
+            "composite_figi": "BBG000C2V3D6",
+            "currency_name": "usd",
+            "last_updated_utc": "2023-11-24T00:00:00Z",
+            "locale": "us",
+            "market": "stocks",
+            "name": "Agilent Technologies Inc.",
+            "primary_exchange": "XNYS",
+            "share_class_figi": "BBG001SCTQY4",
+            "ticker": "A",
+            "type": "CS"
+        },
+        {
+            "active": true,
+            "cik": "0001675149",
+            "composite_figi": "BBG00B3T3HD3",
+            "currency_name": "usd",
+            "last_updated_utc": "2023-11-24T00:00:00Z",
+            "locale": "us",
+            "market": "stocks",
+            "name": "Alcoa Corporation",
+            "primary_exchange": "XNYS",
+            "share_class_figi": "BBG00B3T3HF1",
+            "type": "CS"
+        }
+    ],
+    "status": "OK"
+})"_json;
+
+    JsonResponse response = JsonResponse(j);
+    REQUIRE(response.status == "OK");
+    REQUIRE(response.request_id == "a4bc71c604d135a100af5387bc460dda");
+    for (auto &result: response.results) {
+        std::cout << result.ticker << std::endl;
+    }
+    REQUIRE(response.count == 1);
+    REQUIRE(response.error_found);
+    REQUIRE(response.error_message == "Missed results in response: 1 != 2");
+}

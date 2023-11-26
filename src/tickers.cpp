@@ -9,6 +9,19 @@ namespace simple_polygon_io::tickers {
         return ActiveNames.at(active);
     }
 
+    Active get_active_from_string(const std::string &active) {
+        for (const auto &[key, value]: ActiveNames) {
+            if (value == active) {
+                return key;
+            }
+        }
+        return Active::NONE;
+    }
+
+    Active get_active_from_string(const bool &active) {
+        return active ? Active::TRUE : Active::FALSE;
+    }
+
     std::string get_order_by_name(OrderBy order_by) {
         return OrderByNames.at(order_by);
     }
@@ -21,12 +34,39 @@ namespace simple_polygon_io::tickers {
         return TickerTypeNames.at(type);
     }
 
+    TickerType get_ticker_type_from_string(const std::string& type) {
+        for (const auto &[key, value]: TickerTypeNames) {
+            if (value == type) {
+                return key;
+            }
+        }
+        return TickerType::NONE;
+    }
+
     std::string get_market_name(Market market) {
         return MarketNames.at(market);
     }
 
+    Market get_market_from_string(const std::string& market) {
+        for (const auto &[key, value]: MarketNames) {
+            if (value == market) {
+                return key;
+            }
+        }
+        return Market::NONE;
+    }
+
     std::string get_exchange_name(Exchange exchange) {
         return ExchangeNames.at(exchange);
+    }
+
+    Exchange get_exchange_from_string(const std::string& exchange) {
+        for (const auto &[key, value]: ExchangeNames) {
+            if (value == exchange) {
+                return key;
+            }
+        }
+        return Exchange::NONE;
     }
 
     std::map<std::string, std::string> TickersParams::get_params() const {
@@ -219,5 +259,52 @@ namespace simple_polygon_io::tickers {
         return m_sort;
     }
 
+    Result::Result(const json &j) {
+        ticker = j.value("ticker", "");
+        if (ticker.empty()) {
+            return;
+        }
+        auto s_active = j.at("active").get<bool>();
+        active = get_active_from_string(s_active);
+        cik = j.value("cik", "");
+        composite_figi = j.value("composite_figi", "");
+        currency_name = j.value("currency_name", "");
+        last_updated_utc = j.value("last_updated_utc", "");
+        locale = j.value("locale", "");
+        name = j.value("name", "");
+        share_class_figi = j.value("share_class_figi", "");
+
+        std::string s_type = j.at("type").get<std::string>();
+        type = get_ticker_type_from_string(s_type);
+
+        std::string s_market = j.at("market").get<std::string>();
+        market = get_market_from_string(s_market);
+
+        std::string s_exchange = j.value("primary_exchange", "");
+        primary_exchange = get_exchange_from_string(s_exchange);
+    }
+
+    JsonResponse::JsonResponse(const json &j) {
+        j.at("request_id").get_to(request_id);
+        for (const auto &result_json: j.at("results")) {
+            try{
+            Result result(result_json);
+            if (!result.ticker.empty())
+                results.emplace_back(result_json);
+            } catch (std::exception &e) {
+                error_found = true;
+                error_message = e.what();
+            }
+        }
+        j.at("status").get_to(status);
+        count = results.size();
+        if (count != j.at("count").get<size_t>()) {
+            error_found = true;
+            if (error_message.empty()) {
+                error_message = "Missed results in response: " + std::to_string(count) + " != " +
+                                std::to_string(j.at("count").get<size_t>());
+            }
+        }
+    }
 
 }

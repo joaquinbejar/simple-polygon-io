@@ -26,6 +26,8 @@ namespace simple_polygon_io::tickers {
     };
 
     std::string get_active_name(Active active);
+    Active get_active_from_string(const std::string& active);
+    Active get_active_from_string(const bool &active);
 
     enum class OrderBy {
         NONE = 0,
@@ -136,6 +138,7 @@ namespace simple_polygon_io::tickers {
     };
 
     std::string get_ticker_type_name(TickerType type);
+    TickerType get_ticker_type_from_string(const std::string& type);
 
     enum class Market {
         NONE = 0,
@@ -156,6 +159,7 @@ namespace simple_polygon_io::tickers {
     };
 
     std::string get_market_name(Market market);
+    Market get_market_from_string(const std::string& market);
 
     enum class Exchange {
         NONE = 0,
@@ -176,8 +180,7 @@ namespace simple_polygon_io::tickers {
     };
 
     std::string get_exchange_name(Exchange exchange);
-
-
+    Exchange get_exchange_from_string(const std::string& exchange);
 
     class TickersParams {
     private:
@@ -238,6 +241,33 @@ namespace simple_polygon_io::tickers {
         explicit operator std::map<std::string, std::string>() const ;
 
 
+    };
+
+    struct Result {
+        Active active;
+        std::string cik;
+        std::string composite_figi;
+        std::string currency_name;
+        std::string last_updated_utc;
+        std::string locale;
+        Market market;
+        std::string name;
+        Exchange primary_exchange;
+        std::string share_class_figi;
+        std::string ticker;
+        TickerType type;
+
+        explicit Result(const json& j);
+    };
+
+    struct JsonResponse {
+        size_t count;
+        std::string request_id;
+        std::vector<Result> results;
+        std::string status;
+        bool error_found = false;
+        std::string error_message;
+        explicit JsonResponse(const json& j);
     };
 }
 #endif //SIMPLE_POLYGON_IO_TICKERS_H

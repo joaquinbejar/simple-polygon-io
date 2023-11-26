@@ -16,18 +16,17 @@ namespace simple_polygon_io::client {
 
     class PolygonIOClient {
     public:
-        explicit PolygonIOClient(config::PolygonIOConfig &config,
-                                 config::PolygonIOConfig &mConfig);
+        explicit PolygonIOClient(config::PolygonIOConfig &config);
 
-        PolygonIOClient(const PolygonIOClient &other, config::PolygonIOConfig &mConfig);
+        PolygonIOClient() = delete;
 
-        PolygonIOClient &operator=(const PolygonIOClient &other);
+        PolygonIOClient &operator=(const PolygonIOClient &other) = delete;
 
-        PolygonIOClient(PolygonIOClient &&other) noexcept ;
+        PolygonIOClient(PolygonIOClient &&other) noexcept = delete;
 
-        PolygonIOClient &operator=(PolygonIOClient &&other) noexcept ;
+        PolygonIOClient &operator=(PolygonIOClient &&other) noexcept = delete;
 
-        ~PolygonIOClient();
+        ~PolygonIOClient() = delete;
 
         json get_tickers(const TickersParams &params) const;
 

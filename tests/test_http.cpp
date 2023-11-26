@@ -70,7 +70,7 @@ TEST_CASE("Http getjson ", "[Http]") {
         REQUIRE(j["status"] == "OK");
         REQUIRE(j["count"] > 2);
         REQUIRE(j["results"].size() > 2);
-//        std::cout << j.dump(4) << std::endl;
+        std::cout << j.dump(4) << std::endl;
     }
 
     SECTION("get STOCKS json from path") {
