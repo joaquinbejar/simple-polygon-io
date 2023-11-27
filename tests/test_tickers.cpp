@@ -131,7 +131,7 @@ TEST_CASE("TickersParams Tests", "[tickers]") {
     params.set_limit(1001);
     params.set_sort(TickerSortBy::TICKER);
 
-    auto params_map = params.get_params();
+    ParamsMap params_map = params;
 
     SECTION("Check parameters map") {
         REQUIRE(params_map["ticker"] == "ABC");
@@ -168,7 +168,7 @@ TEST_CASE("TickersParams Empty Tests", "[tickers]") {
 
     SECTION("Check parameters map") {
         TickersParams params;
-        auto params_map = params.get_params();
+        ParamsMap params_map = params;
         REQUIRE(params_map.empty());
     }
 
@@ -187,69 +187,69 @@ TEST_CASE("TickersParams Empty Tests", "[tickers]") {
         params.set_limit(0);
         params.set_sort(TickerSortBy::NONE);
 
-        auto params_map = params.get_params();
+        ParamsMap params_map = params;
         REQUIRE(params_map.empty());
     }
 
     SECTION("Check parameters map filled 1 field") {
         TickersParams params;
         params.set_ticker("AAPL");
-        auto params_map = params.get_params();
+        ParamsMap params_map = params;
         REQUIRE(params_map.size() == 1);
         REQUIRE(params_map["ticker"] == "AAPL");
 
         params.set_type(TickerType::RIGHT);
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 2);
         REQUIRE(params_map["type"] == "RIGHT");
 
         params.set_market(Market::CRYPTO);
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 3);
         REQUIRE(params_map["market"] == "crypto");
 
         params.set_exchange(Exchange::XNYS);
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 4);
         REQUIRE(params_map["exchange"] == "XNYS");
 
         params.set_cusip("cusip");
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 5);
         REQUIRE(params_map["cusip"] == "cusip");
 
         params.set_cik("cik");
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 6);
         REQUIRE(params_map["cik"] == "cik");
 
         params.set_date("date");
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 7);
         REQUIRE(params_map["date"] == "date");
 
         params.set_search("search");
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 8);
         REQUIRE(params_map["search"] == "search");
 
         params.set_active(Active::TRUE);
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 9);
         REQUIRE(params_map["active"] == "true");
 
         params.set_order(OrderBy::ASC);
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 10);
         REQUIRE(params_map["order"] == "asc");
 
         params.set_limit(10);
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 11);
         REQUIRE(params_map["limit"] == "10");
 
         params.set_sort(TickerSortBy::TICKER);
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 12);
         REQUIRE(params_map["sort"] == "ticker");
     }
@@ -259,32 +259,32 @@ TEST_CASE("TickersParams GTE GT LTE LT", "[tickers]") {
 
     SECTION("Check parameters map") {
         TickersParams params;
-        auto params_map = params.get_params();
+        ParamsMap params_map = params;
         REQUIRE(params_map.empty());
 
         params.set_ticker("AAPL");
         REQUIRE(params.get_ticker() == "AAPL");
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 1);
 
         params.set_ticker_gte("A");
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 1);
         REQUIRE(params.get_ticker_gte() == "A");
 
         params.set_ticker_gt("B");
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 1);
         REQUIRE(params.get_ticker_gt() == "B");
 
         params.set_ticker_lte("C");
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 2);
         REQUIRE(params.get_ticker_lte() == "C");
 
         params.set_ticker("AAPL");
         REQUIRE(params.get_ticker() == "AAPL");
-        params_map = params.get_params();
+        params_map = params;
         REQUIRE(params_map.size() == 1);
     }
 }

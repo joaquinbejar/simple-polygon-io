@@ -18,6 +18,7 @@ namespace simple_polygon_io::tickers {
 
     typedef std::string Query;
     typedef std::vector<std::string> Queries;
+    typedef std::map<std::string, std::string> ParamsMap;
 
     const std::string TICKERS_PATH = "/v3/reference/tickers";
 
@@ -242,12 +243,8 @@ namespace simple_polygon_io::tickers {
         [[nodiscard]] OrderBy get_order() const;
         [[nodiscard]] size_t get_limit() const;
         [[nodiscard]] TickerSortBy get_sort() const;
-
-        [[nodiscard]] std::map<std::string, std::string> get_params() const;
-        [[nodiscard]] json get_json() const;
-        explicit operator std::map<std::string, std::string>() const ;
-
-
+        [[nodiscard]] json to_json() const;
+        operator ParamsMap() const ;
     };
 
     struct Result {

@@ -32,7 +32,7 @@ namespace simple_polygon_io::http {
      * This function makes an initial call to an internal method to get JSON data.
      * If the result contains a "next_url" key, it processes this URL to fetch additional
      * data recursively. The function removes the host and port from the next_url,
-     * extracts the cursor, and makes a subsequent call to get_json with updated path parameters.
+     * extracts the cursor, and makes a subsequent call to to_json with updated path parameters.
      *
      * The "next_url" key is used for pagination: if present, it indicates more data is available.
      * The function continues fetching data until "next_url" is no longer present in the response.

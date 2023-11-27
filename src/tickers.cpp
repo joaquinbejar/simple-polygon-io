@@ -76,7 +76,7 @@ namespace simple_polygon_io::tickers {
         return Exchange::NONE;
     }
 
-    std::map<std::string, std::string> TickersParams::get_params() const {
+    TickersParams::operator ParamsMap() const {
         std::map<std::string, std::string> params;
         params["ticker"] = m_ticker;
         params["type"] = get_ticker_type_name(m_type);
@@ -105,12 +105,9 @@ namespace simple_polygon_io::tickers {
         return params;
     }
 
-    TickersParams::operator std::map<std::string, std::string>() const {
-        return get_params();
-    }
 
-    json TickersParams::get_json() const {
-        return json(get_params());
+    json TickersParams::to_json() const {
+        return json((ParamsMap)*this);
     }
 
     void TickersParams::set_ticker(const std::string &ticker) {
