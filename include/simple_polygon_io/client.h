@@ -26,7 +26,7 @@ namespace simple_polygon_io::client {
 
         PolygonIOClient &operator=(PolygonIOClient &&other) noexcept = delete;
 
-        ~PolygonIOClient() = delete;
+        ~PolygonIOClient() = default;
 
         json get_tickers(const TickersParams &params) const;
 
