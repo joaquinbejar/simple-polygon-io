@@ -244,6 +244,7 @@ namespace simple_polygon_io::tickers {
         [[nodiscard]] size_t get_limit() const;
         [[nodiscard]] TickerSortBy get_sort() const;
         [[nodiscard]] json to_json() const;
+        // NOLINTNEXTLINE(clang-diagnostic-xxx, clang-analyzer-xxx)
         operator ParamsMap() const ;
     };
 

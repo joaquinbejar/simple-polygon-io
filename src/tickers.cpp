@@ -107,7 +107,7 @@ namespace simple_polygon_io::tickers {
 
 
     json TickersParams::to_json() const {
-        return json((ParamsMap)*this);
+        return {(ParamsMap)*this};
     }
 
     void TickersParams::set_ticker(const std::string &ticker) {
