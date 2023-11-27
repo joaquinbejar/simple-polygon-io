@@ -7,6 +7,6 @@ FetchContent_MakeAvailable(simple_logger)
 
 set(SIMPLE_LOGGER_INCLUDE ${simple_logger_SOURCE_DIR}/include CACHE INTERNAL "")
 if (CMAKE_DEBUG)
-        message(STATUS "simple_mariadb/cmake simple_logger_SOURCE_DIR ${simple_logger_SOURCE_DIR}")
-        message(STATUS "simple_mariadb/cmake SIMPLE_LOGGER_INCLUDE ${SIMPLE_LOGGER_INCLUDE}")
+        message(STATUS "simple_polygon_io/cmake simple_logger_SOURCE_DIR ${simple_logger_SOURCE_DIR}")
+        message(STATUS "simple_polygon_io/cmake SIMPLE_LOGGER_INCLUDE ${SIMPLE_LOGGER_INCLUDE}")
 endif ()

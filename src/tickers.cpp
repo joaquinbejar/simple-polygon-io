@@ -4,18 +4,25 @@
 #include "simple_polygon_io/tickers.h"
 #include "common/common.h"
 
+namespace common::sql_utils {
+    std::string empty_to_null(const std::string &query) {
+        std::string modifiedQuery = query;
+        std::string toReplace = "''";
+        std::string replaceWith = "NULL";
+
+        size_t pos = 0;
+        while ((pos = modifiedQuery.find(toReplace, pos)) != std::string::npos) {
+            modifiedQuery.replace(pos, toReplace.length(), replaceWith);
+            pos += replaceWith.length();
+        }
+
+        return modifiedQuery;
+    }
+}
+
 namespace simple_polygon_io::tickers {
     std::string get_active_name(Active active) {
         return ActiveNames.at(active);
-    }
-
-    Active get_active_from_string(const std::string &active) {
-        for (const auto &[key, value]: ActiveNames) {
-            if (value == active) {
-                return key;
-            }
-        }
-        return Active::NONE;
     }
 
     Active get_active_from_string(const bool &active) {
@@ -286,7 +293,7 @@ namespace simple_polygon_io::tickers {
 
     Query Result::query(const std::string &table) const {
         std::stringstream query;
-        query << "INSERT INTO " + table + " (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, "
+        query << "INSERT INTO `" + table + "` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, "
                  "`locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ("
               << "'" << get_active_name(active) << "', "
               << "'" << cik << "', "
@@ -300,7 +307,7 @@ namespace simple_polygon_io::tickers {
               << "'" << share_class_figi << "', "
               << "'" << ticker << "', "
               << "'" << get_ticker_type_name(type) << "');";
-        return query.str();
+        return common::sql_utils::empty_to_null(query.str());
     }
 
     JsonResponse::JsonResponse(const json &j) {

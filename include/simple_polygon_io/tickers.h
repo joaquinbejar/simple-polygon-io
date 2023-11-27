@@ -9,7 +9,15 @@
 #include <map>
 #include "common/common.h"
 
+namespace common::sql_utils { // TODO: remove in the next common update
+    std::string empty_to_null(const std::string& query) ;
+}
+
 namespace simple_polygon_io::tickers {
+
+
+    typedef std::string Query;
+    typedef std::vector<std::string> Queries;
 
     const std::string TICKERS_PATH = "/v3/reference/tickers";
 
@@ -26,7 +34,6 @@ namespace simple_polygon_io::tickers {
     };
 
     std::string get_active_name(Active active);
-    Active get_active_from_string(const std::string& active);
     Active get_active_from_string(const bool &active);
 
     enum class OrderBy {
@@ -242,9 +249,6 @@ namespace simple_polygon_io::tickers {
 
 
     };
-
-    typedef std::string Query;
-    typedef std::vector<std::string> Queries;
 
     struct Result {
         Active active;
