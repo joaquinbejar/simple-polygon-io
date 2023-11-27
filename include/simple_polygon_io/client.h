@@ -32,7 +32,7 @@ namespace simple_polygon_io::client {
 
         ~PolygonIOClient() = default;
 
-        JsonResponse get_tickers(const TickersParams &params) const;
+        [[nodiscard]] JsonResponse get_tickers(const TickersParams &params) const;
 
     private:
         simple_polygon_io::config::PolygonIOConfig &m_config;
