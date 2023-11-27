@@ -8,11 +8,15 @@
 #include <simple_polygon_io/config.h>
 #include <simple_polygon_io/tickers.h>
 #include <simple_polygon_io/exceptions.h>
+#include "simple_polygon_io/http.h"
 
 namespace simple_polygon_io::client {
 
+    using simple_polygon_io::http::HTTPClient;
     using simple_polygon_io::tickers::TickersParams;
     using simple_polygon_io::tickers::TICKERS_PATH;
+    using simple_polygon_io::http::PathParams;
+    using simple_polygon_io::tickers::JsonResponse;
 
     class PolygonIOClient {
     public:
@@ -28,7 +32,7 @@ namespace simple_polygon_io::client {
 
         ~PolygonIOClient() = default;
 
-        json get_tickers(const TickersParams &params) const;
+        JsonResponse get_tickers(const TickersParams &params) const;
 
     private:
         simple_polygon_io::config::PolygonIOConfig &m_config;

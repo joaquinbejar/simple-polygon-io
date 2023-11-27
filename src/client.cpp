@@ -14,20 +14,12 @@ namespace simple_polygon_io::client {
 
 
 
-    json PolygonIOClient::get_tickers(const TickersParams &params) const {
-
-//            json tickers;
-//            try {
-//                std::vector<json> response = this->get_jsons(TICKERS_PATH, params);
-//                for (auto &ticker: response) {
-//
-//                }
-//            } catch (std::exception &e) {
-//                logger->log_error("Error getting tickers: " + std::string(e.what()));
-//            }
-//            return tickers;
-
-        return {};
+    JsonResponse PolygonIOClient::get_tickers(const TickersParams &params) const {
+        HTTPClient http_client = HTTPClient(m_config);
+        PathParams path_params = {TICKERS_PATH, (std::map<std::string, std::string>) params};
+        json j = http_client.get_json(path_params);
+        tickers::JsonResponse response = tickers::JsonResponse(j);
+        return response;
     }
 
 }

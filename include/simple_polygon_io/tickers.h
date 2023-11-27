@@ -277,7 +277,7 @@ namespace simple_polygon_io::tickers {
         bool error_found = false;
         std::string error_message;
         explicit JsonResponse(const json& j);
-        Queries queries(const std::string &table) const;
+        [[nodiscard]] Queries queries(const std::string &table) const;
     };
 }
 #endif //SIMPLE_POLYGON_IO_TICKERS_H
