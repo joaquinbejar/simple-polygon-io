@@ -290,7 +290,7 @@ namespace simple_polygon_io::tickers {
 
     Query Result::query(const std::string &table) const {
         std::stringstream query;
-        query << "INSERT INTO `" + table + "` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, "
+        query << "INSERT IGNORE INTO `" + table + "` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, "
                  "`locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ("
               << "'" << get_active_name(active) << "', "
               << "'" << cik << "', "
