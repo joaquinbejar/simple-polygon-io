@@ -117,3 +117,18 @@ TEST_CASE("Http get all tickers", "[Http]") {
         REQUIRE(j.find("request_id") != j.end());
     }
 }
+
+TEST_CASE("Check query syntax", "[Http]") {
+    SECTION("get AAN") {
+        PolygonIOConfig config;
+        HTTPClient http_client = HTTPClient(config);
+        TickersParams tickers_params;
+        tickers_params.set_ticker("AAN");
+        PathParams path_params = {TICKERS_PATH, (std::map<std::string, std::string>) tickers_params};
+        json j = http_client.get_json(path_params);
+        REQUIRE(j["status"] == "OK");
+        REQUIRE(j["count"] == j["results"].size());
+        REQUIRE(j.find("request_id") != j.end());
+//        std::cout << j.dump(4) << std::endl;
+    }
+}

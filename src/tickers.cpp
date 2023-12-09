@@ -18,7 +18,17 @@ namespace common::sql_utils {
 
         return modifiedQuery;
     }
+    std::string remove_quotes(const std::string &input) {
+        std::string result;
+        for (char c : input) {
+            if (c != '\'' && c != '"' && c != '`') {
+                result += c;
+            }
+        }
+        return result;
+    }
 }
+
 
 namespace simple_polygon_io::tickers {
     std::string get_active_name(Active active) {
@@ -299,7 +309,7 @@ namespace simple_polygon_io::tickers {
               << "'" << last_updated_utc << "', "
               << "'" << locale << "', "
               << "'" << get_market_name(market) << "', "
-              << "'" << name << "', "
+              << "'" << common::sql_utils::remove_quotes(name) << "', "
               << "'" << get_exchange_name(primary_exchange) << "', "
               << "'" << share_class_figi << "', "
               << "'" << ticker << "', "

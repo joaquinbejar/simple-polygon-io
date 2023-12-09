@@ -538,13 +538,13 @@ TEST_CASE("Json to Result Query", "[tickers]") {
     REQUIRE(response.count == 1);
     Result result = response.results[0];
     REQUIRE(result.active == Active::TRUE);
-    std::string query_result = R"(INSERT INTO `table` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', '0001090872', 'BBG000C2V3D6', 'usd', '2023-11-24T00:00:00Z', 'us', 'stocks', 'Agilent Technologies Inc.', 'XNYS', 'BBG001SCTQY4', 'A', 'CS');)";
+    std::string query_result = R"(INSERT IGNORE INTO `table` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', '0001090872', 'BBG000C2V3D6', 'usd', '2023-11-24T00:00:00Z', 'us', 'stocks', 'Agilent Technologies Inc.', 'XNYS', 'BBG001SCTQY4', 'A', 'CS');)";
     REQUIRE(result.query("table") == query_result);
 }
 
 TEST_CASE("JsonResponse to Queries", "[tickers]") {
     json j = R"({
-    "count": 3,
+    "count": 4,
     "request_id": "a4bc71c604d135a100af5387bc460dda",
     "results": [
         {
@@ -584,6 +584,20 @@ TEST_CASE("JsonResponse to Queries", "[tickers]") {
             "primary_exchange": "XNYS",
             "ticker": "AAA",
             "type": "CS"
+        },
+        {
+            "active": true,
+            "cik": "0001821393",
+            "composite_figi": "BBG00WCNDCZ6",
+            "currency_name": "usd",
+            "last_updated_utc": "2023-12-08T00:00:00Z",
+            "locale": "us",
+            "market": "stocks",
+            "name": "The Aaron's Company, Inc.",
+            "primary_exchange": "XNYS",
+            "share_class_figi": "BBG00WCNDDH4",
+            "ticker": "AAN",
+            "type": "CS"
         }
     ],
     "status": "OK"
@@ -594,12 +608,15 @@ TEST_CASE("JsonResponse to Queries", "[tickers]") {
     REQUIRE(response.request_id == "a4bc71c604d135a100af5387bc460dda");
     REQUIRE(response.error_found == false);
     REQUIRE(response.error_message.empty());
-    REQUIRE(response.count == 3);
+    REQUIRE(response.count == 4);
     Queries queries = response.queries("table");
     Query query1 = queries[0];
-    REQUIRE(query1 == R"(INSERT INTO `table` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', '0001090872', 'BBG000C2V3D6', 'usd', '2023-11-24T00:00:00Z', 'us', 'stocks', 'Agilent Technologies Inc.', 'XNYS', 'BBG001SCTQY4', 'A', 'CS');)");
+    REQUIRE(query1 == R"(INSERT IGNORE INTO `table` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', '0001090872', 'BBG000C2V3D6', 'usd', '2023-11-24T00:00:00Z', 'us', 'stocks', 'Agilent Technologies Inc.', 'XNYS', 'BBG001SCTQY4', 'A', 'CS');)");
     Query query2 = queries[1];
-    REQUIRE(query2 == R"(INSERT INTO `table` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', '0001675149', 'BBG00B3T3HD3', 'usd', '2023-11-24T00:00:00Z', 'us', 'stocks', 'Alcoa Corporation', 'XNYS', 'BBG00B3T3HF1', 'AA', 'CS');)");
+    REQUIRE(query2 == R"(INSERT IGNORE INTO `table` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', '0001675149', 'BBG00B3T3HD3', 'usd', '2023-11-24T00:00:00Z', 'us', 'stocks', 'Alcoa Corporation', 'XNYS', 'BBG00B3T3HF1', 'AA', 'CS');)");
     Query query3 = queries[2];
-    REQUIRE(query3 == R"(INSERT INTO `table` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', NULL, NULL, 'usd', '2023-11-24T00:00:00Z', NULL, 'stocks', 'Alcoa Corporation', 'XNYS', NULL, 'AAA', 'CS');)");
+    REQUIRE(query3 == R"(INSERT IGNORE INTO `table` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', NULL, NULL, 'usd', '2023-11-24T00:00:00Z', NULL, 'stocks', 'Alcoa Corporation', 'XNYS', NULL, 'AAA', 'CS');)");
+    Query query4 = queries[3];
+    REQUIRE(query4 == R"(INSERT IGNORE INTO `table` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, `locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ('true', '0001821393', 'BBG00WCNDCZ6', 'usd', '2023-12-08T00:00:00Z', 'us', 'stocks', 'The Aarons Company, Inc.', 'XNYS', 'BBG00WCNDDH4', 'AAN', 'CS');)");
+
 }
