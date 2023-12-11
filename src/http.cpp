@@ -63,6 +63,8 @@ namespace simple_polygon_io::http {
                                          next_result["results"].end());
             }
         }
+        if (result.is_null())
+            return result;
         result.erase("next_url");
         result.at("count") = result.at("results").size();
         return result;
