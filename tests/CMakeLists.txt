@@ -83,7 +83,7 @@ target_link_libraries(test_http PRIVATE
         simple_config
         common
         simple_polygon_io
-        libcurl_shared
+        libcurl_static
 )
 
 add_executable(test_exceptions test_exceptions.cpp)
@@ -104,5 +104,5 @@ target_link_libraries(test_exceptions PRIVATE
         simple_config
         common
         simple_polygon_io
-        libcurl_shared
+        libcurl_static
 )

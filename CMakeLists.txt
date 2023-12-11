@@ -52,7 +52,7 @@ target_link_libraries(simple_polygon_io
         simple_config
         simple_logger
         common
-        libcurl_shared
+        libcurl_static
 )
 
 set(SIMPLE_POLYGON_IO_TESTS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
