@@ -2,10 +2,8 @@
 // Created by Joaquin Bejar Garcia on 18/11/23.
 //
 
-
 #include "simple_polygon_io/http.h"
 #include <memory>
-
 
 namespace simple_polygon_io::http {
 
@@ -146,7 +144,7 @@ namespace simple_polygon_io::http {
                 return json::parse(*httpData);
             } else {
                 logger->send<simple_logger::LogLevel::ERROR>(
-                        "ERROR HTTPClient::m_get_json: " + std::to_string(httpCode) + " " + *httpData);
+                        "ERROR HTTPClient::m_get_json http code: " + std::to_string(httpCode) + " " + *httpData);
             }
             return j;
         } catch (std::exception &e) {
