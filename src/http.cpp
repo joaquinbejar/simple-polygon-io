@@ -144,6 +144,9 @@ namespace simple_polygon_io::http {
 
             if (httpCode == 200 && !httpData->empty()) {
                 return json::parse(*httpData);
+            } else {
+                logger->send<simple_logger::LogLevel::ERROR>(
+                        "ERROR HTTPClient::m_get_json: " + std::to_string(httpCode) + " " + *httpData);
             }
             return j;
         } catch (std::exception &e) {
