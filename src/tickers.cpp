@@ -18,9 +18,10 @@ namespace common::sql_utils {
 
         return modifiedQuery;
     }
+
     std::string remove_quotes(const std::string &input) {
         std::string result;
-        for (char c : input) {
+        for (char c: input) {
             if (c != '\'' && c != '"' && c != '`') {
                 result += c;
             }
@@ -51,7 +52,7 @@ namespace simple_polygon_io::tickers {
         return TickerTypeNames.at(type);
     }
 
-    TickerType get_ticker_type_from_string(const std::string& type) {
+    TickerType get_ticker_type_from_string(const std::string &type) {
         for (const auto &[key, value]: TickerTypeNames) {
             if (value == type) {
                 return key;
@@ -64,7 +65,7 @@ namespace simple_polygon_io::tickers {
         return MarketNames.at(market);
     }
 
-    Market get_market_from_string(const std::string& market) {
+    Market get_market_from_string(const std::string &market) {
         for (const auto &[key, value]: MarketNames) {
             if (value == market) {
                 return key;
@@ -77,7 +78,7 @@ namespace simple_polygon_io::tickers {
         return ExchangeNames.at(exchange);
     }
 
-    Exchange get_exchange_from_string(const std::string& exchange) {
+    Exchange get_exchange_from_string(const std::string &exchange) {
         for (const auto &[key, value]: ExchangeNames) {
             if (value == exchange) {
                 return key;
@@ -117,7 +118,7 @@ namespace simple_polygon_io::tickers {
 
 
     json TickersParams::to_json() const {
-        return {(ParamsMap)*this};
+        return {(ParamsMap) *this};
     }
 
     void TickersParams::set_ticker(const std::string &ticker) {
@@ -274,33 +275,41 @@ namespace simple_polygon_io::tickers {
     }
 
     Result::Result(const json &j) {
-        ticker = j.value("ticker", "");
-        if (ticker.empty()) {
-            return;
+        if (j == nullptr) {
+            throw std::runtime_error("Error parsing simple_polygon_io::tickers::Result: empty JSON");
         }
-        auto s_active = j.at("active").get<bool>();
-        active = get_active_from_string(s_active);
-        cik = j.value("cik", "");
-        composite_figi = j.value("composite_figi", "");
-        currency_name = j.value("currency_name", "");
-        last_updated_utc = j.value("last_updated_utc", "");
-        locale = j.value("locale", "");
-        name = j.value("name", "");
-        share_class_figi = j.value("share_class_figi", "");
+        try {
+            ticker = j.value("ticker", "");
+            if (ticker.empty()) {
+                return;
+            }
+            auto s_active = j.at("active").get<bool>();
+            active = get_active_from_string(s_active);
+            cik = j.value("cik", "");
+            composite_figi = j.value("composite_figi", "");
+            currency_name = j.value("currency_name", "");
+            last_updated_utc = j.value("last_updated_utc", "");
+            locale = j.value("locale", "");
+            name = j.value("name", "");
+            share_class_figi = j.value("share_class_figi", "");
 
-        std::string s_type = j.at("type").get<std::string>();
-        type = get_ticker_type_from_string(s_type);
+            std::string s_type = j.at("type").get<std::string>();
+            type = get_ticker_type_from_string(s_type);
 
-        std::string s_market = j.at("market").get<std::string>();
-        market = get_market_from_string(s_market);
+            std::string s_market = j.at("market").get<std::string>();
+            market = get_market_from_string(s_market);
 
-        std::string s_exchange = j.value("primary_exchange", "");
-        primary_exchange = get_exchange_from_string(s_exchange);
+            std::string s_exchange = j.value("primary_exchange", "");
+            primary_exchange = get_exchange_from_string(s_exchange);
+        } catch (std::exception &e) {
+            throw std::runtime_error("Error parsing simple_polygon_io::tickers::Result: " + std::string(e.what()));
+        }
     }
 
     Query Result::query(const std::string &table) const {
         std::stringstream query;
-        query << "INSERT IGNORE INTO `" + table + "` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, "
+        query << "INSERT IGNORE INTO `" + table +
+                 "` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, "
                  "`locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ("
               << "'" << get_active_name(active) << "', "
               << "'" << cik << "', "
@@ -318,25 +327,33 @@ namespace simple_polygon_io::tickers {
     }
 
     JsonResponse::JsonResponse(const json &j) {
-        j.at("request_id").get_to(request_id);
-        for (const auto &result_json: j.at("results")) {
-            try{
-            Result result(result_json);
-            if (!result.ticker.empty())
-                results.emplace_back(result_json);
-            } catch (std::exception &e) {
-                error_found = true;
-                error_message = e.what();
-            }
+        if (j == nullptr) {
+            throw std::runtime_error("Error parsing simple_polygon_io::tickers::JsonResponse: empty JSON");
         }
-        j.at("status").get_to(status);
-        count = results.size();
-        if (count != j.at("count").get<size_t>()) {
-            error_found = true;
-            if (error_message.empty()) {
-                error_message = "Missed results in response: " + std::to_string(count) + " != " +
-                                std::to_string(j.at("count").get<size_t>());
+        try {
+            j.at("request_id").get_to(request_id);
+            for (const auto &result_json: j.at("results")) {
+                try {
+                    Result result(result_json);
+                    if (!result.ticker.empty())
+                        results.emplace_back(result_json);
+                } catch (std::exception &e) {
+                    error_found = true;
+                    error_message = e.what();
+                }
             }
+            j.at("status").get_to(status);
+            count = results.size();
+            if (count != j.at("count").get<size_t>()) {
+                error_found = true;
+                if (error_message.empty()) {
+                    error_message = "Missed results in response: " + std::to_string(count) + " != " +
+                                    std::to_string(j.at("count").get<size_t>());
+                }
+            }
+        } catch (std::exception &e) {
+            throw std::runtime_error(
+                    "Error parsing simple_polygon_io::tickers::JsonResponse: " + std::string(e.what()));
         }
     }
 
