@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <common/common.h>
+#include <common/dates.h>
 #include <common/sql_utils.h>
 #include <simple_polygon_io/common.h>
 
@@ -54,11 +55,13 @@ namespace simple_polygon_io::ohlc {
 
     class OhlcParams {
     private:
-        std::string m_date;
+        std::string m_date = ::common::dates::get_current_date();
         Adjusted m_adjusted = Adjusted::NONE;
         IncludeOtc m_include_otc = IncludeOtc::NONE;
 
     public:
+        bool use_current_date = false;
+
         void set_date(const std::string &date);
 
         [[nodiscard]] const std::string &get_date() const;
@@ -73,6 +76,8 @@ namespace simple_polygon_io::ohlc {
 
         // NOLINTNEXTLINE(clang-diagnostic-xxx, clang-analyzer-xxx)
         operator ParamsMap() const;
+
+
     };
 
     struct Result {

@@ -23,7 +23,11 @@ namespace simple_polygon_io::ohlc {
 
 
     void OhlcParams::set_date(const std::string &date) {
-        m_date = date;
+        if (use_current_date) {
+            m_date = ::common::dates::get_current_date();
+        } else {
+            m_date = date;
+        }
     }
 
     [[nodiscard]] const std::string &OhlcParams::get_date() const {
@@ -48,7 +52,6 @@ namespace simple_polygon_io::ohlc {
 
     OhlcParams::operator ParamsMap() const {
         ParamsMap params;
-//        params["date"] = m_date;
         params["adjusted"] = get_adjusted_name(m_adjusted);
         params["include_otc"] = get_include_otc_name(m_include_otc);
         for (auto it = params.begin(); it != params.end();) {
