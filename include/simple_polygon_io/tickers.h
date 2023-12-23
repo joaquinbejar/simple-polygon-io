@@ -14,7 +14,6 @@
 
 namespace simple_polygon_io::tickers {
 
-
     typedef std::string Query;
     typedef std::vector<std::string> Queries;
     typedef std::map<std::string, std::string> ParamsMap;
