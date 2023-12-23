@@ -17,6 +17,8 @@ namespace simple_polygon_io::ohlc {
     typedef std::vector<std::string> Queries;
     typedef std::map<std::string, std::string> ParamsMap;
 
+    const std::string OHLC_PATH = "/v2/aggs/grouped/locale/us/market/stocks/";
+
     enum class Adjusted {
         NONE = 0,
         TRUE = 1,
@@ -103,8 +105,6 @@ namespace simple_polygon_io::ohlc {
 
         [[nodiscard]] Query query(const std::string &table) const;
     };
-
-
 
     struct JsonResponse : simple_polygon_io::common::BaseJsonResponse {
         Adjusted adjusted;

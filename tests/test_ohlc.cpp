@@ -19,7 +19,7 @@ TEST_CASE("Operator std::map ", "[ohlc]") {
 
 
         std::map<std::string, std::string> params_map = (std::map<std::string, std::string>)params;
-        REQUIRE(params_map["date"] == "2023-11-24");
+//        REQUIRE(params_map["date"] == "2023-11-24");
         REQUIRE(params_map["adjusted"] == "true");
         REQUIRE(params_map["include_otc"] == "false");
     }
@@ -48,7 +48,7 @@ TEST_CASE("OhlcParams Tests", "[ohlc]") {
     ParamsMap params_map = params;
 
     SECTION("Check parameters map") {
-        REQUIRE(params_map["date"] == "2023-11-24");
+//        REQUIRE(params_map["date"] == "2023-11-24");
         REQUIRE(params_map["adjusted"] == "true");
         REQUIRE(params_map["include_otc"] == "true");
     }
@@ -81,17 +81,17 @@ TEST_CASE("OhlcParams Empty Tests", "[ohlc]") {
         OhlcParams params;
         params.set_date("2023-11-24");
         ParamsMap params_map = params;
-        REQUIRE(params_map.size() == 1);
-        REQUIRE(params_map["date"] == "2023-11-24");
+        REQUIRE(params_map.size() == 0);
+//        REQUIRE(params_map["date"] == "2023-11-24");
 
         params.set_adjusted(Adjusted::TRUE);
         params_map = params;
-        REQUIRE(params_map.size() == 2);
+        REQUIRE(params_map.size() == 1);
         REQUIRE(params_map["adjusted"] == "true");
 
         params.set_include_otc(IncludeOtc::TRUE);
         params_map = params;
-        REQUIRE(params_map.size() == 3);
+        REQUIRE(params_map.size() == 2);
         REQUIRE(params_map["include_otc"] == "true");
     }
 }

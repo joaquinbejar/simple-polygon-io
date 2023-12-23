@@ -48,7 +48,7 @@ namespace simple_polygon_io::ohlc {
 
     OhlcParams::operator ParamsMap() const {
         ParamsMap params;
-        params["date"] = m_date;
+//        params["date"] = m_date;
         params["adjusted"] = get_adjusted_name(m_adjusted);
         params["include_otc"] = get_include_otc_name(m_include_otc);
         for (auto it = params.begin(); it != params.end();) {
@@ -62,9 +62,6 @@ namespace simple_polygon_io::ohlc {
     }
 
     Result::Result(const json &j) {
-        if (j == nullptr) {
-            throw std::runtime_error("Error parsing simple_polygon_io::ohlc::Result: empty JSON");
-        }
         try {
             T = j.value("T", "");
             if (T.empty()) {
@@ -73,16 +70,15 @@ namespace simple_polygon_io::ohlc {
             c = j.at("c").get<double>();
             h = j.at("h").get<double>();
             l = j.at("l").get<double>();
-            n = j.at("n").get<size_t>();
+            n = j.contains("n") ? j.at("n").get<size_t>() : 0;
             o = j.at("o").get<double>();
             t = j.at("t").get<size_t>();
-            v = j.at("v").get<size_t>();
-            vw = j.at("vw").get<double>();
+            v = j.contains("v") ? j.at("v").get<size_t>() : 0;
+            vw = j.contains("vw") ? j.at("vw").get<double>() : 0;
             // otc field may exist
-            if (j.find("otc") != j.end()) {
+            if (j.contains("otc")) {
                 otc = j.at("otc").get<bool>();
             }
-
         } catch (std::exception &e) {
             throw std::runtime_error("Error parsing simple_polygon_io::ohlc::Result: " + std::string(e.what()));
         }
@@ -110,6 +106,12 @@ namespace simple_polygon_io::ohlc {
         if (j == nullptr) {
             throw std::runtime_error("Error parsing simple_polygon_io::ohlc::JsonResponse: empty JSON");
         }
+        if (!j.contains("results")) {
+            error_found = true;
+            error_message = "No results found in response";
+            return;
+        }
+
         try {
             j.at("request_id").get_to(request_id);
             results.reserve(j.at("results").size());
