@@ -4,31 +4,31 @@
 #include "simple_polygon_io/tickers.h"
 #include "common/common.h"
 
-namespace common::sql_utils {
-    std::string empty_to_null(const std::string &query) {
-        std::string modifiedQuery = query;
-        std::string toReplace = "''";
-        std::string replaceWith = "NULL";
-
-        size_t pos = 0;
-        while ((pos = modifiedQuery.find(toReplace, pos)) != std::string::npos) {
-            modifiedQuery.replace(pos, toReplace.length(), replaceWith);
-            pos += replaceWith.length();
-        }
-
-        return modifiedQuery;
-    }
-
-    std::string remove_quotes(const std::string &input) {
-        std::string result;
-        for (char c: input) {
-            if (c != '\'' && c != '"' && c != '`') {
-                result += c;
-            }
-        }
-        return result;
-    }
-}
+//namespace common::sql_utils {
+//    std::string empty_to_null(const std::string &query) {
+//        std::string modifiedQuery = query;
+//        std::string toReplace = "''";
+//        std::string replaceWith = "NULL";
+//
+//        size_t pos = 0;
+//        while ((pos = modifiedQuery.find(toReplace, pos)) != std::string::npos) {
+//            modifiedQuery.replace(pos, toReplace.length(), replaceWith);
+//            pos += replaceWith.length();
+//        }
+//
+//        return modifiedQuery;
+//    }
+//
+//    std::string remove_quotes(const std::string &input) {
+//        std::string result;
+//        for (char c: input) {
+//            if (c != '\'' && c != '"' && c != '`') {
+//                result += c;
+//            }
+//        }
+//        return result;
+//    }
+//}
 
 
 namespace simple_polygon_io::tickers {
@@ -88,7 +88,7 @@ namespace simple_polygon_io::tickers {
     }
 
     TickersParams::operator ParamsMap() const {
-        std::map<std::string, std::string> params;
+        ParamsMap params;
         params["ticker"] = m_ticker;
         params["type"] = get_ticker_type_name(m_type);
         params["market"] = get_market_name(m_market);

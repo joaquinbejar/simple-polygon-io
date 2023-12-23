@@ -7,13 +7,14 @@
 
 #include <string>
 #include <map>
-#include "common/common.h"
+#include <common/common.h>
+#include <common/sql_utils.h>
 
-namespace common::sql_utils { // TODO: remove in the next common update
-    std::string empty_to_null(const std::string &query);
-
-    std::string remove_quotes(const std::string &input);
-}
+//namespace common::sql_utils { // TODO: remove in the next common update
+//    std::string empty_to_null(const std::string &query);
+//
+//    std::string remove_quotes(const std::string &input);
+//}
 
 namespace simple_polygon_io::tickers {
 
