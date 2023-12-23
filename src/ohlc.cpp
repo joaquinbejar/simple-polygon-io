@@ -103,7 +103,7 @@ namespace simple_polygon_io::ohlc {
               << "" << t << ", "
               << "" << v << ", "
               << "" << vw << ");";
-        return common::sql_utils::empty_to_null(query.str());
+        return ::common::sql_utils::empty_to_null(query.str());
     }
 
     JsonResponse::JsonResponse(const json &j) {

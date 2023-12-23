@@ -4,33 +4,6 @@
 #include "simple_polygon_io/tickers.h"
 #include "common/common.h"
 
-//namespace common::sql_utils {
-//    std::string empty_to_null(const std::string &query) {
-//        std::string modifiedQuery = query;
-//        std::string toReplace = "''";
-//        std::string replaceWith = "NULL";
-//
-//        size_t pos = 0;
-//        while ((pos = modifiedQuery.find(toReplace, pos)) != std::string::npos) {
-//            modifiedQuery.replace(pos, toReplace.length(), replaceWith);
-//            pos += replaceWith.length();
-//        }
-//
-//        return modifiedQuery;
-//    }
-//
-//    std::string remove_quotes(const std::string &input) {
-//        std::string result;
-//        for (char c: input) {
-//            if (c != '\'' && c != '"' && c != '`') {
-//                result += c;
-//            }
-//        }
-//        return result;
-//    }
-//}
-
-
 namespace simple_polygon_io::tickers {
     std::string get_active_name(Active active) {
         return ActiveNames.at(active);
@@ -122,7 +95,7 @@ namespace simple_polygon_io::tickers {
     }
 
     void TickersParams::set_ticker(const std::string &ticker) {
-        m_ticker = common::to_upper(ticker);
+        m_ticker = ::common::to_upper(ticker);
         if (!ticker.empty()) {
             this->m_ticker_gte = "";
             this->m_ticker_gt = "";
@@ -318,12 +291,12 @@ namespace simple_polygon_io::tickers {
               << "'" << last_updated_utc << "', "
               << "'" << locale << "', "
               << "'" << get_market_name(market) << "', "
-              << "'" << common::sql_utils::remove_quotes(name) << "', "
+              << "'" << ::common::sql_utils::remove_quotes(name) << "', "
               << "'" << get_exchange_name(primary_exchange) << "', "
               << "'" << share_class_figi << "', "
               << "'" << ticker << "', "
               << "'" << get_ticker_type_name(type) << "');";
-        return common::sql_utils::empty_to_null(query.str());
+        return ::common::sql_utils::empty_to_null(query.str());
     }
 
     JsonResponse::JsonResponse(const json &j) {

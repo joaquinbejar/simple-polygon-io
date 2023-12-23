@@ -9,12 +9,8 @@
 #include <map>
 #include <common/common.h>
 #include <common/sql_utils.h>
+#include <simple_polygon_io/common.h>
 
-//namespace common::sql_utils { // TODO: remove in the next common update
-//    std::string empty_to_null(const std::string &query);
-//
-//    std::string remove_quotes(const std::string &input);
-//}
 
 namespace simple_polygon_io::tickers {
 
@@ -306,7 +302,7 @@ namespace simple_polygon_io::tickers {
         [[nodiscard]] Query query(const std::string &table) const;
     };
 
-    struct JsonResponse {
+    struct JsonResponse : simple_polygon_io::common::BaseJsonResponse {
         size_t count;
         std::string request_id;
         std::vector<Result> results;

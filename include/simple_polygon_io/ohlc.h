@@ -9,6 +9,7 @@
 #include <map>
 #include <common/common.h>
 #include <common/sql_utils.h>
+#include <simple_polygon_io/common.h>
 
 namespace simple_polygon_io::ohlc {
 
@@ -103,7 +104,9 @@ namespace simple_polygon_io::ohlc {
         [[nodiscard]] Query query(const std::string &table) const;
     };
 
-    struct JsonResponse {
+
+
+    struct JsonResponse : simple_polygon_io::common::BaseJsonResponse {
         Adjusted adjusted;
         size_t queryCount{};
         size_t resultsCount{};
@@ -116,7 +119,7 @@ namespace simple_polygon_io::ohlc {
 
         explicit JsonResponse(const json &j);
 
-        [[nodiscard]] Queries queries(const std::string &table) const;
+        [[nodiscard]] Queries queries(const std::string &table) const override;
     };
 }
 #endif //SIMPLE_POLYGON_IO_OHLC_H
