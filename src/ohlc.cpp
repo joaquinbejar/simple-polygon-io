@@ -22,21 +22,21 @@ namespace simple_polygon_io::ohlc {
     }
 
 
-        void OhlcParams::set_date(const std::string &date) {
-            m_date = date;
-        }
+    void OhlcParams::set_date(const std::string &date) {
+        m_date = date;
+    }
 
-        [[nodiscard]] const std::string &OhlcParams::get_date() const {
-            return m_date;
-        }
+    [[nodiscard]] const std::string &OhlcParams::get_date() const {
+        return m_date;
+    }
 
-        void OhlcParams::set_date(const Adjusted &adjusted) {
-            m_adjusted = adjusted;
-        }
+    void OhlcParams::set_adjusted(const Adjusted &adjusted) {
+        m_adjusted = adjusted;
+    }
 
-        [[nodiscard]] const Adjusted &OhlcParams::get_adjusted() const {
-            return m_adjusted;
-        }
+    [[nodiscard]] const Adjusted &OhlcParams::get_adjusted() const {
+        return m_adjusted;
+    }
 
     void OhlcParams::set_include_otc(const IncludeOtc &include_otc) {
         m_include_otc = include_otc;
@@ -46,19 +46,108 @@ namespace simple_polygon_io::ohlc {
         return m_include_otc;
     }
 
-        OhlcParams::operator ParamsMap() const {
-            ParamsMap params;
-            params["date"] = m_date;
-            params["adjusted"] = get_adjusted_name(m_adjusted);
-            params["include_otc"] = get_include_otc_name(m_include_otc);
-            for (auto it = params.begin(); it != params.end();) {
-                if (it->second.empty()) {
-                    it = params.erase(it);
-                } else {
-                    ++it;
+    OhlcParams::operator ParamsMap() const {
+        ParamsMap params;
+        params["date"] = m_date;
+        params["adjusted"] = get_adjusted_name(m_adjusted);
+        params["include_otc"] = get_include_otc_name(m_include_otc);
+        for (auto it = params.begin(); it != params.end();) {
+            if (it->second.empty()) {
+                it = params.erase(it);
+            } else {
+                ++it;
+            }
+        }
+        return params;
+    }
+
+    Result::Result(const json &j) {
+        if (j == nullptr) {
+            throw std::runtime_error("Error parsing simple_polygon_io::ohlc::Result: empty JSON");
+        }
+        try {
+            T = j.value("T", "");
+            if (T.empty()) {
+                return;
+            }
+            c = j.at("c").get<double>();
+            h = j.at("h").get<double>();
+            l = j.at("l").get<double>();
+            n = j.at("n").get<size_t>();
+            o = j.at("o").get<double>();
+            t = j.at("t").get<size_t>();
+            v = j.at("v").get<size_t>();
+            vw = j.at("vw").get<double>();
+            // otc field may exist
+            if (j.find("otc") != j.end()) {
+                otc = j.at("otc").get<bool>();
+            }
+
+        } catch (std::exception &e) {
+            throw std::runtime_error("Error parsing simple_polygon_io::ohlc::Result: " + std::string(e.what()));
+        }
+    }
+
+    Query Result::query(const std::string &table) const {
+        std::stringstream query;
+        query << "REPLACE INTO `" + table +
+                 "` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, "
+                 "`otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ("
+              << "'" << T << "', "
+              << "" << o << ", "
+              << "" << h << ", "
+              << "" << l << ", "
+              << "" << c << ", "
+              << "" << n << ", "
+              << "" << otc << ", "
+              << "" << t << ", "
+              << "" << v << ", "
+              << "" << vw << ");";
+        return common::sql_utils::empty_to_null(query.str());
+    }
+
+    JsonResponse::JsonResponse(const json &j) {
+        if (j == nullptr) {
+            throw std::runtime_error("Error parsing simple_polygon_io::ohlc::JsonResponse: empty JSON");
+        }
+        try {
+            j.at("request_id").get_to(request_id);
+            results.reserve(j.at("results").size());
+            for (const auto &result_json: j.at("results")) {
+                try {
+                    Result result(result_json);
+                    if (!result.T.empty()) {
+                        results.emplace_back(result_json);
+                    }
+                } catch (std::exception &e) {
+                    error_found = true;
+                    error_message = e.what();
                 }
             }
-            return params;
+            j.at("status").get_to(status);
+            j.at("queryCount").get_to(queryCount);
+            j.at("resultsCount").get_to(resultsCount);
+            adjusted = get_adjusted_from_string(j.at("adjusted").get<bool>());
+            count = results.size();
+            if (count != j.at("count").get<size_t>()) {
+                error_found = true;
+                if (error_message.empty()) {
+                    error_message = "Missed results in response: " + std::to_string(count) + " != " +
+                                    std::to_string(j.at("count").get<size_t>());
+                }
+            }
+        } catch (std::exception &e) {
+            throw std::runtime_error(
+                    "Error parsing simple_polygon_io::ohlc::JsonResponse: " + std::string(e.what()));
         }
+    }
+
+    Queries JsonResponse::queries(const std::string &table) const {
+        Queries queries;
+        for (const auto &result: results) {
+            queries.emplace_back(result.query(table));
+        }
+        return queries;
+    }
 
 }

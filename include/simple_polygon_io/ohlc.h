@@ -52,15 +52,15 @@ namespace simple_polygon_io::ohlc {
     class OhlcParams {
     private:
         std::string m_date;
-        Adjusted m_adjusted = Adjusted::TRUE;
-        IncludeOtc m_include_otc = IncludeOtc::FALSE;
+        Adjusted m_adjusted = Adjusted::NONE;
+        IncludeOtc m_include_otc = IncludeOtc::NONE;
 
     public:
         void set_date(const std::string &date);
 
         [[nodiscard]] const std::string &get_date() const;
 
-        void set_date(const Adjusted &adjusted);
+        void set_adjusted(const Adjusted &adjusted);
 
         [[nodiscard]] const Adjusted &get_adjusted() const;
 
@@ -70,6 +70,53 @@ namespace simple_polygon_io::ohlc {
 
         // NOLINTNEXTLINE(clang-diagnostic-xxx, clang-analyzer-xxx)
         operator ParamsMap() const;
+    };
+
+    struct Result {
+        /*
+         *     {
+      "T": "VSAT",
+      "c": 34.24,
+      "h": 35.47,
+      "l": 34.21,
+      "n": 4966,
+      "o": 34.9,
+      "t": 1602705600000,
+      "v": 312583,
+      "vw": 34.4736
+    }
+         */
+        std::string T;
+        double c = 0;
+        double h = 0;
+        double l = 0;
+        size_t n = 0;
+        double o = 0;
+        size_t t = 0;
+        size_t v = 0;
+        double vw = 0;
+        bool otc;
+
+
+        explicit Result(const json &j);
+
+        [[nodiscard]] Query query(const std::string &table) const;
+    };
+
+    struct JsonResponse {
+        Adjusted adjusted;
+        size_t queryCount{};
+        size_t resultsCount{};
+        size_t count {};
+        std::string request_id;
+        std::vector<Result> results;
+        std::string status;
+        bool error_found = false;
+        std::string error_message;
+
+        explicit JsonResponse(const json &j);
+
+        [[nodiscard]] Queries queries(const std::string &table) const;
     };
 }
 #endif //SIMPLE_POLYGON_IO_OHLC_H
