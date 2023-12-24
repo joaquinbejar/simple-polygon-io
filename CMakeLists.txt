@@ -14,16 +14,21 @@ endif()
 
 set(SIMPLE_POLYGON_IO_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(SIMPLE_POLYGON_IO_SOURCE_FILES
+        include/simple_polygon_io/common.h
         include/simple_polygon_io/client.h
         include/simple_polygon_io/config.h
         include/simple_polygon_io/exceptions.h
         include/simple_polygon_io/tickers.h
         include/simple_polygon_io/http.h
+        include/simple_polygon_io/ohlc.h
+        include/simple_polygon_io/macd.h
         src/config.cpp
         src/client.cpp
         src/exceptions.cpp
         src/tickers.cpp
         src/http.cpp
+        src/ohlc.cpp
+        src/macd.cpp
 )
 
 add_library(simple_polygon_io STATIC ${SIMPLE_POLYGON_IO_SOURCE_FILES})
@@ -52,7 +57,7 @@ target_link_libraries(simple_polygon_io
         simple_config
         simple_logger
         common
-        libcurl_shared
+        libcurl_static
 )
 
 set(SIMPLE_POLYGON_IO_TESTS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)

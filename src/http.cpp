@@ -2,10 +2,8 @@
 // Created by Joaquin Bejar Garcia on 18/11/23.
 //
 
-
 #include "simple_polygon_io/http.h"
 #include <memory>
-
 
 namespace simple_polygon_io::http {
 
@@ -32,7 +30,7 @@ namespace simple_polygon_io::http {
      * This function makes an initial call to an internal method to get JSON data.
      * If the result contains a "next_url" key, it processes this URL to fetch additional
      * data recursively. The function removes the host and port from the next_url,
-     * extracts the cursor, and makes a subsequent call to get_json with updated path parameters.
+     * extracts the cursor, and makes a subsequent call to to_json with updated path parameters.
      *
      * The "next_url" key is used for pagination: if present, it indicates more data is available.
      * The function continues fetching data until "next_url" is no longer present in the response.
@@ -63,8 +61,10 @@ namespace simple_polygon_io::http {
                                          next_result["results"].end());
             }
         }
+        if (result.is_null())
+            return result;
         result.erase("next_url");
-        result.at("count") = result.at("results").size();
+        result["count"] = result.contains("results") ? result.at("results").size() : 0;
         return result;
     }
 
@@ -142,6 +142,9 @@ namespace simple_polygon_io::http {
 
             if (httpCode == 200 && !httpData->empty()) {
                 return json::parse(*httpData);
+            } else {
+                logger->send<simple_logger::LogLevel::ERROR>(
+                        "ERROR HTTPClient::m_get_json http response code: " + std::to_string(httpCode) + " " + *httpData);
             }
             return j;
         } catch (std::exception &e) {

@@ -9,6 +9,10 @@ namespace simple_polygon_io::tickers {
         return ActiveNames.at(active);
     }
 
+    Active get_active_from_string(const bool &active) {
+        return active ? Active::TRUE : Active::FALSE;
+    }
+
     std::string get_order_by_name(OrderBy order_by) {
         return OrderByNames.at(order_by);
     }
@@ -21,16 +25,43 @@ namespace simple_polygon_io::tickers {
         return TickerTypeNames.at(type);
     }
 
+    TickerType get_ticker_type_from_string(const std::string &type) {
+        for (const auto &[key, value]: TickerTypeNames) {
+            if (value == type) {
+                return key;
+            }
+        }
+        return TickerType::NONE;
+    }
+
     std::string get_market_name(Market market) {
         return MarketNames.at(market);
+    }
+
+    Market get_market_from_string(const std::string &market) {
+        for (const auto &[key, value]: MarketNames) {
+            if (value == market) {
+                return key;
+            }
+        }
+        return Market::NONE;
     }
 
     std::string get_exchange_name(Exchange exchange) {
         return ExchangeNames.at(exchange);
     }
 
-    std::map<std::string, std::string> TickersParams::get_params() const {
-        std::map<std::string, std::string> params;
+    Exchange get_exchange_from_string(const std::string &exchange) {
+        for (const auto &[key, value]: ExchangeNames) {
+            if (value == exchange) {
+                return key;
+            }
+        }
+        return Exchange::NONE;
+    }
+
+    TickersParams::operator ParamsMap() const {
+        ParamsMap params;
         params["ticker"] = m_ticker;
         params["type"] = get_ticker_type_name(m_type);
         params["market"] = get_market_name(m_market);
@@ -58,16 +89,13 @@ namespace simple_polygon_io::tickers {
         return params;
     }
 
-    TickersParams::operator std::map<std::string, std::string>() const {
-        return get_params();
-    }
 
-    json TickersParams::get_json() const {
-        return json(get_params());
+    json TickersParams::to_json() const {
+        return {(ParamsMap) *this};
     }
 
     void TickersParams::set_ticker(const std::string &ticker) {
-        m_ticker = common::to_upper(ticker);
+        m_ticker = ::common::to_upper(ticker);
         if (!ticker.empty()) {
             this->m_ticker_gte = "";
             this->m_ticker_gt = "";
@@ -219,5 +247,95 @@ namespace simple_polygon_io::tickers {
         return m_sort;
     }
 
+    Result::Result(const json &j) {
+        if (j == nullptr) {
+            throw std::runtime_error("Error parsing simple_polygon_io::tickers::Result: empty JSON");
+        }
+        try {
+            ticker = j.value("ticker", "");
+            if (ticker.empty()) {
+                return;
+            }
+            auto s_active = j.at("active").get<bool>();
+            active = get_active_from_string(s_active);
+            cik = j.value("cik", "");
+            composite_figi = j.value("composite_figi", "");
+            currency_name = j.value("currency_name", "");
+            last_updated_utc = j.value("last_updated_utc", "");
+            locale = j.value("locale", "");
+            name = j.value("name", "");
+            share_class_figi = j.value("share_class_figi", "");
+
+            std::string s_type = j.at("type").get<std::string>();
+            type = get_ticker_type_from_string(s_type);
+
+            std::string s_market = j.at("market").get<std::string>();
+            market = get_market_from_string(s_market);
+
+            std::string s_exchange = j.value("primary_exchange", "");
+            primary_exchange = get_exchange_from_string(s_exchange);
+        } catch (std::exception &e) {
+            throw std::runtime_error("Error parsing simple_polygon_io::tickers::Result: " + std::string(e.what()));
+        }
+    }
+
+    Query Result::query(const std::string &table) const {
+        std::stringstream query;
+        query << "INSERT IGNORE INTO `" + table +
+                 "` (`active`, `cik`, `composite_figi`, `currency_name`, `last_updated_utc`, "
+                 "`locale`, `market`, `name`, `primary_exchange`, `share_class_figi`, `ticker`, `type`) VALUES ("
+              << "'" << get_active_name(active) << "', "
+              << "'" << cik << "', "
+              << "'" << composite_figi << "', "
+              << "'" << currency_name << "', "
+              << "'" << last_updated_utc << "', "
+              << "'" << locale << "', "
+              << "'" << get_market_name(market) << "', "
+              << "'" << ::common::sql_utils::remove_quotes(name) << "', "
+              << "'" << get_exchange_name(primary_exchange) << "', "
+              << "'" << share_class_figi << "', "
+              << "'" << ticker << "', "
+              << "'" << get_ticker_type_name(type) << "');";
+        return ::common::sql_utils::empty_to_null(query.str());
+    }
+
+    JsonResponse::JsonResponse(const json &j) {
+        if (j == nullptr) {
+            throw std::runtime_error("Error parsing simple_polygon_io::tickers::JsonResponse: empty JSON");
+        }
+        try {
+            j.at("request_id").get_to(request_id);
+            for (const auto &result_json: j.at("results")) {
+                try {
+                    Result result(result_json);
+                    if (!result.ticker.empty())
+                        results.emplace_back(result_json);
+                } catch (std::exception &e) {
+                    error_found = true;
+                    error_message = e.what();
+                }
+            }
+            j.at("status").get_to(status);
+            count = results.size();
+            if (count != j.at("count").get<size_t>()) {
+                error_found = true;
+                if (error_message.empty()) {
+                    error_message = "Missed results in response: " + std::to_string(count) + " != " +
+                                    std::to_string(j.at("count").get<size_t>());
+                }
+            }
+        } catch (std::exception &e) {
+            throw std::runtime_error(
+                    "Error parsing simple_polygon_io::tickers::JsonResponse: " + std::string(e.what()));
+        }
+    }
+
+    Queries JsonResponse::queries(const std::string &table) const {
+        Queries queries;
+        for (const auto &result: results) {
+            queries.emplace_back(result.query(table));
+        }
+        return queries;
+    }
 
 }

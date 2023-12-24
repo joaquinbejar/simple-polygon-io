@@ -8,46 +8,38 @@
 namespace simple_polygon_io::client {
 
 
-    client::PolygonIOClient::PolygonIOClient(config::PolygonIOConfig &config,
-                                             config::PolygonIOConfig &mConfig) : m_config(mConfig) {
-
+    PolygonIOClient::PolygonIOClient(config::PolygonIOConfig &config) : m_config(config) {
+        if (!m_config.validate()) {
+            throw std::runtime_error("PolygonIOConfig is not valid");
+        }
     }
 
-    PolygonIOClient::PolygonIOClient(const PolygonIOClient &other, config::PolygonIOConfig &mConfig)
-            : m_config(mConfig) {
 
+    simple_polygon_io::tickers::JsonResponse PolygonIOClient::get_tickers(const TickersParams &params) const {
+        try {
+            HTTPClient http_client = HTTPClient(m_config);
+            PathParams path_params = {TICKERS_PATH, params};
+            json j = http_client.get_json(path_params);
+            tickers::JsonResponse response = tickers::JsonResponse(j);
+            return response;
+        } catch (std::exception &e) {
+            m_config.logger->send<simple_logger::LogLevel::ERROR>("Error getting tickers: " + std::string(e.what()));
+            throw e;
+        }
     }
 
-    PolygonIOClient &PolygonIOClient::operator=(const PolygonIOClient &other) {
-        return *this;
-    }
-
-    PolygonIOClient::PolygonIOClient(PolygonIOClient &&other) noexcept: m_config(other.m_config) {
-
-    }
-
-    PolygonIOClient &PolygonIOClient::operator=(PolygonIOClient &&other) noexcept {
-        return *this;
-    }
-
-    PolygonIOClient::~PolygonIOClient() {
-
-    }
-
-    json PolygonIOClient::get_tickers(const TickersParams &params) const {
-
-//            json tickers;
-//            try {
-//                std::vector<json> response = this->get_jsons(TICKERS_PATH, params);
-//                for (auto &ticker: response) {
-//
-//                }
-//            } catch (std::exception &e) {
-//                logger->log_error("Error getting tickers: " + std::string(e.what()));
-//            }
-//            return tickers;
-
-        return {};
+    simple_polygon_io::ohlc::JsonResponse PolygonIOClient::get_ohlc(const OhlcParams &params) const {
+        try {
+            HTTPClient http_client = HTTPClient(m_config);
+            std::string url  = OHLC_PATH + params.get_date();
+            PathParams path_params = {url, params};
+            json j = http_client.get_json(path_params);
+            ohlc::JsonResponse response = ohlc::JsonResponse(j);
+            return response;
+        } catch (std::exception &e) {
+            m_config.logger->send<simple_logger::LogLevel::ERROR>("Error getting ohlc: " + std::string(e.what()));
+            throw e;
+        }
     }
 
 }

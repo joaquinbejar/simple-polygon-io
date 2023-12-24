@@ -7,9 +7,16 @@
 
 #include <string>
 #include <map>
-#include "common/common.h"
+#include <common/common.h>
+#include <common/sql_utils.h>
+#include <simple_polygon_io/common.h>
+
 
 namespace simple_polygon_io::tickers {
+
+    typedef std::string Query;
+    typedef std::vector<std::string> Queries;
+    typedef std::map<std::string, std::string> ParamsMap;
 
     const std::string TICKERS_PATH = "/v3/reference/tickers";
 
@@ -20,12 +27,14 @@ namespace simple_polygon_io::tickers {
     };
 
     const std::map<Active, std::string> ActiveNames = {
-            {Active::TRUE, "true"},
+            {Active::TRUE,  "true"},
             {Active::FALSE, "false"},
-            {Active::NONE, ""}
+            {Active::NONE,  ""}
     };
 
     std::string get_active_name(Active active);
+
+    Active get_active_from_string(const bool &active);
 
     enum class OrderBy {
         NONE = 0,
@@ -34,7 +43,7 @@ namespace simple_polygon_io::tickers {
     };
 
     const std::map<OrderBy, std::string> OrderByNames = {
-            {OrderBy::ASC, "asc"},
+            {OrderBy::ASC,  "asc"},
             {OrderBy::DESC, "desc"},
             {OrderBy::NONE, ""}
     };
@@ -61,22 +70,22 @@ namespace simple_polygon_io::tickers {
     };
 
     const std::map<TickerSortBy, std::string> TickerSortByNames = {
-            {TickerSortBy::TICKER, "ticker"},
-            {TickerSortBy::NAME, "name"},
-            {TickerSortBy::MARKET, "market"},
-            {TickerSortBy::LOCALE, "locale"},
-            {TickerSortBy::PRIMARY_EXCHANGE, "primary_exchange"},
-            {TickerSortBy::TYPE, "type"},
-            {TickerSortBy::CURRENCY_SYMBOL, "currency_symbol"},
-            {TickerSortBy::CURRENCY_NAME, "currency_name"},
+            {TickerSortBy::TICKER,               "ticker"},
+            {TickerSortBy::NAME,                 "name"},
+            {TickerSortBy::MARKET,               "market"},
+            {TickerSortBy::LOCALE,               "locale"},
+            {TickerSortBy::PRIMARY_EXCHANGE,     "primary_exchange"},
+            {TickerSortBy::TYPE,                 "type"},
+            {TickerSortBy::CURRENCY_SYMBOL,      "currency_symbol"},
+            {TickerSortBy::CURRENCY_NAME,        "currency_name"},
             {TickerSortBy::BASE_CURRENCY_SYMBOL, "base_currency_symbol"},
-            {TickerSortBy::BASE_CURRENCY_NAME, "base_currency_name"},
-            {TickerSortBy::CIK, "cik"},
-            {TickerSortBy::COMPOSITE_FIGI, "composite_figi"},
-            {TickerSortBy::SHARE_CLASS_FIGI, "share_class_figi"},
-            {TickerSortBy::LAST_UPDATED_UTC, "last_updated_utc"},
-            {TickerSortBy::DELISTED_UTC, "delisted_utc"},
-            {TickerSortBy::NONE, ""}
+            {TickerSortBy::BASE_CURRENCY_NAME,   "base_currency_name"},
+            {TickerSortBy::CIK,                  "cik"},
+            {TickerSortBy::COMPOSITE_FIGI,       "composite_figi"},
+            {TickerSortBy::SHARE_CLASS_FIGI,     "share_class_figi"},
+            {TickerSortBy::LAST_UPDATED_UTC,     "last_updated_utc"},
+            {TickerSortBy::DELISTED_UTC,         "delisted_utc"},
+            {TickerSortBy::NONE,                 ""}
     };
 
     std::string get_ticker_sort_by_name(TickerSortBy sort_by);
@@ -109,33 +118,35 @@ namespace simple_polygon_io::tickers {
     };
 
     const std::map<TickerType, std::string> TickerTypeNames = {
-            {TickerType::CS, "CS"},
-            {TickerType::ADRC, "ADRC"},
-            {TickerType::ADRP, "ADRP"},
-            {TickerType::ADRR, "ADRR"},
-            {TickerType::UNIT, "UNIT"},
-            {TickerType::RIGHT, "RIGHT"},
-            {TickerType::PFD, "PFD"},
-            {TickerType::FUND, "FUND"},
-            {TickerType::SP, "SP"},
+            {TickerType::CS,      "CS"},
+            {TickerType::ADRC,    "ADRC"},
+            {TickerType::ADRP,    "ADRP"},
+            {TickerType::ADRR,    "ADRR"},
+            {TickerType::UNIT,    "UNIT"},
+            {TickerType::RIGHT,   "RIGHT"},
+            {TickerType::PFD,     "PFD"},
+            {TickerType::FUND,    "FUND"},
+            {TickerType::SP,      "SP"},
             {TickerType::WARRANT, "WARRANT"},
-            {TickerType::INDEX, "INDEX"},
-            {TickerType::ETF, "ETF"},
-            {TickerType::ETN, "ETN"},
-            {TickerType::OS, "OS"},
-            {TickerType::GDR, "GDR"},
-            {TickerType::OTHER, "OTHER"},
-            {TickerType::NYRS, "NYRS"},
-            {TickerType::AGEN, "AGEN"},
-            {TickerType::EQLK, "EQLK"},
-            {TickerType::BOND, "BOND"},
-            {TickerType::ADRW, "ADRW"},
-            {TickerType::BASKET, "BASKET"},
-            {TickerType::LT, "LT"},
-            {TickerType::NONE, ""}
+            {TickerType::INDEX,   "INDEX"},
+            {TickerType::ETF,     "ETF"},
+            {TickerType::ETN,     "ETN"},
+            {TickerType::OS,      "OS"},
+            {TickerType::GDR,     "GDR"},
+            {TickerType::OTHER,   "OTHER"},
+            {TickerType::NYRS,    "NYRS"},
+            {TickerType::AGEN,    "AGEN"},
+            {TickerType::EQLK,    "EQLK"},
+            {TickerType::BOND,    "BOND"},
+            {TickerType::ADRW,    "ADRW"},
+            {TickerType::BASKET,  "BASKET"},
+            {TickerType::LT,      "LT"},
+            {TickerType::NONE,    ""}
     };
 
     std::string get_ticker_type_name(TickerType type);
+
+    TickerType get_ticker_type_from_string(const std::string &type);
 
     enum class Market {
         NONE = 0,
@@ -147,15 +158,17 @@ namespace simple_polygon_io::tickers {
     };
 
     const std::map<Market, std::string> MarketNames = {
-            {Market::STOCKS, "stocks"},
-            {Market::CRYPTO, "crypto"},
-            {Market::FX, "fx"},
-            {Market::OTC, "otc"},
+            {Market::STOCKS,  "stocks"},
+            {Market::CRYPTO,  "crypto"},
+            {Market::FX,      "fx"},
+            {Market::OTC,     "otc"},
             {Market::INDICES, "indices"},
-            {Market::NONE, ""}
+            {Market::NONE,    ""}
     };
 
     std::string get_market_name(Market market);
+
+    Market get_market_from_string(const std::string &market);
 
     enum class Exchange {
         NONE = 0,
@@ -177,7 +190,7 @@ namespace simple_polygon_io::tickers {
 
     std::string get_exchange_name(Exchange exchange);
 
-
+    Exchange get_exchange_from_string(const std::string &exchange);
 
     class TickersParams {
     private:
@@ -200,44 +213,105 @@ namespace simple_polygon_io::tickers {
 
     public:
         void set_ticker(const std::string &ticker);
+
         void set_type(TickerType type);
+
         void set_market(Market market);
+
         void set_exchange(Exchange exchange);
+
         void set_cusip(const std::string &cusip);
+
         void set_cik(const std::string &cik);
+
         void set_date(const std::string &date);
+
         void set_search(const std::string &search);
+
         void set_active(Active active);
+
         void set_order(OrderBy order);
+
         void set_limit(size_t limit);
+
         void set_sort(TickerSortBy sort);
+
         void set_ticker_gte(const std::string &ticker_gte);
+
         void set_ticker_gt(const std::string &ticker_gt);
+
         void set_ticker_lte(const std::string &ticker_lte);
+
         void set_ticker_lt(const std::string &ticker_lt);
 
         [[nodiscard]] const std::string &get_ticker_gte() const;
+
         [[nodiscard]] const std::string &get_ticker_gt() const;
+
         [[nodiscard]] const std::string &get_ticker_lte() const;
+
         [[nodiscard]] const std::string &get_ticker_lt() const;
+
         [[nodiscard]] const std::string &get_ticker() const;
+
         [[nodiscard]] TickerType get_type() const;
+
         [[nodiscard]] Market get_market() const;
+
         [[nodiscard]] Exchange get_exchange() const;
+
         [[nodiscard]] const std::string &get_cusip() const;
+
         [[nodiscard]] const std::string &get_cik() const;
+
         [[nodiscard]] const std::string &get_date() const;
+
         [[nodiscard]] const std::string &get_search() const;
+
         [[nodiscard]] Active get_active() const;
+
         [[nodiscard]] OrderBy get_order() const;
+
         [[nodiscard]] size_t get_limit() const;
+
         [[nodiscard]] TickerSortBy get_sort() const;
 
-        [[nodiscard]] std::map<std::string, std::string> get_params() const;
-        [[nodiscard]] json get_json() const;
-        explicit operator std::map<std::string, std::string>() const ;
+        [[nodiscard]] json to_json() const;
 
+        // NOLINTNEXTLINE(clang-diagnostic-xxx, clang-analyzer-xxx)
+        operator ParamsMap() const;
+    };
 
+    struct Result {
+        Active active;
+        std::string cik;
+        std::string composite_figi;
+        std::string currency_name;
+        std::string last_updated_utc;
+        std::string locale;
+        Market market;
+        std::string name;
+        Exchange primary_exchange;
+        std::string share_class_figi;
+        std::string ticker;
+        TickerType type;
+
+        explicit Result(const json &j);
+
+        [[nodiscard]] Query query(const std::string &table) const;
+    };
+
+    struct JsonResponse : simple_polygon_io::common::BaseJsonResponse {
+        size_t count;
+        std::string request_id;
+        std::vector<Result> results;
+        std::string status;
+        bool error_found = false;
+        std::string error_message;
+
+        explicit JsonResponse(const json &j);
+
+        [[nodiscard]] Queries queries(const std::string &table) const;
     };
 }
 #endif //SIMPLE_POLYGON_IO_TICKERS_H

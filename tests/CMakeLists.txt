@@ -83,7 +83,7 @@ target_link_libraries(test_http PRIVATE
         simple_config
         common
         simple_polygon_io
-        libcurl_shared
+        libcurl_static
 )
 
 add_executable(test_exceptions test_exceptions.cpp)
@@ -104,5 +104,25 @@ target_link_libraries(test_exceptions PRIVATE
         simple_config
         common
         simple_polygon_io
-        libcurl_shared
+        libcurl_static
+)
+
+
+add_executable(test_ohlc test_ohlc.cpp)
+target_include_directories(test_ohlc
+        PRIVATE
+        ${SIMPLE_POLYGON_IO_INCLUDE}
+        ${SIMPLE_COLOR_INCLUDE}
+        ${SIMPLE_CONFIG_INCLUDE}
+        ${SIMPLE_LOGGER_INCLUDE}
+        ${NLOHMANN_JSON_INCLUDE}
+        ${COMMON_INCLUDE}
+)
+
+target_link_libraries(test_ohlc PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(test_ohlc PRIVATE
+        simple_logger
+        simple_config
+        common
+        simple_polygon_io
 )
