@@ -147,6 +147,32 @@ namespace simple_polygon_io::ohlc {
         }
     }
 
+    JsonResponse::JsonResponse() {
+        error_found = false;
+        error_message = "";
+        request_id = "";
+        status = "";
+        queryCount = 0;
+        resultsCount = 0;
+        adjusted = Adjusted::NONE;
+        count = 0;
+        results = {};
+    };
+
+    void JsonResponse::merge(const JsonResponse &response) {
+        if (response.error_found) {
+            error_found = true;
+            error_message = response.error_message;
+        }
+        results.insert(results.end(), response.results.begin(), response.results.end());
+        count += response.count;
+        queryCount += response.queryCount;
+        resultsCount += response.resultsCount;
+        adjusted = response.adjusted == adjusted ? response.adjusted : Adjusted::TRUE;
+        request_id = response.request_id;
+        status = response.status;
+    }
+
     Queries JsonResponse::queries(const std::string &table) const {
         Queries queries;
         for (const auto &result: results) {

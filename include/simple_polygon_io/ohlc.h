@@ -115,7 +115,7 @@ namespace simple_polygon_io::ohlc {
         Adjusted adjusted;
         size_t queryCount{};
         size_t resultsCount{};
-        size_t count {};
+        size_t count{};
         std::string request_id;
         std::vector<Result> results;
         std::string status;
@@ -123,6 +123,10 @@ namespace simple_polygon_io::ohlc {
         std::string error_message;
 
         explicit JsonResponse(const json &j);
+
+        JsonResponse();
+
+        void merge(const JsonResponse &response);
 
         [[nodiscard]] Queries queries(const std::string &table) const override;
     };
