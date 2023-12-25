@@ -334,3 +334,116 @@ TEST_CASE("JsonResponse to Queries", "[ohlc]") {
     Query query3 = queries[2];
     REQUIRE(query3 == R"(REPLACE INTO `table` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('USDU', 25.92, 25.95, 25.8204, 25.88, 2417, 0, 1673298000000, 642813, 25.8745);)");
 }
+
+TEST_CASE("JsonResponse merge to Queries", "[ohlc]") {
+    json j1 = R"({
+                "queryCount": 3,
+                "resultsCount": 3,
+                "adjusted": true,
+                "results": [
+                {
+                "T": "TTMI",
+                "v": 394280,
+                "vw": 16.1078,
+                "o": 15.96,
+                "c": 16.08,
+                "h": 16.335,
+                "l": 15.96,
+                "t": 1673298000000,
+                "n": 5416
+                },
+                {
+                "T": "OEC",
+                "v": 485157,
+                "vw": 19.0627,
+                "o": 18.67,
+                "c": 18.98,
+                "h": 19.43,
+                "l": 18.45,
+                "t": 1673298000000,
+                "n": 8130
+                },
+                {
+                "T": "USDU",
+                "v": 642813,
+                "vw": 25.8745,
+                "o": 25.92,
+                "c": 25.88,
+                "h": 25.95,
+                "l": 25.8204,
+                "t": 1673298000000,
+                "n": 2417
+                }
+                ],
+                "status": "OK",
+                "request_id": "09aa0aabcd3880585c5d9d89434eceb0",
+                "count": 3
+                })"_json;
+    json j2 = R"({
+                "queryCount": 3,
+                "resultsCount": 3,
+                "adjusted": true,
+                "results": [
+                {
+                "T": "TTMIA",
+                "v": 394280,
+                "vw": 16.1078,
+                "o": 15.96,
+                "c": 16.08,
+                "h": 16.335,
+                "l": 15.96,
+                "t": 1673298000000,
+                "n": 5416
+                },
+                {
+                "T": "OECA",
+                "v": 485157,
+                "vw": 19.0627,
+                "o": 18.67,
+                "c": 18.98,
+                "h": 19.43,
+                "l": 18.45,
+                "t": 1673298000000,
+                "n": 8130
+                },
+                {
+                "T": "USDUA",
+                "v": 642813,
+                "vw": 25.8745,
+                "o": 25.92,
+                "c": 25.88,
+                "h": 25.95,
+                "l": 25.8204,
+                "t": 1673298000000,
+                "n": 2417
+                }
+                ],
+                "status": "OK",
+                "request_id": "09aa0aabcd3880585c5d9d89434eceb1",
+                "count": 3
+                })"_json;
+
+    JsonResponse response;
+    response.merge(JsonResponse(j1));
+    response.merge(JsonResponse(j2));
+
+    REQUIRE(response.status == "OK");
+    REQUIRE(response.request_id == "09aa0aabcd3880585c5d9d89434eceb1");
+    REQUIRE(response.error_found == false);
+    REQUIRE(response.error_message.empty());
+    REQUIRE(response.count == 6);
+    Queries queries = response.queries("table");
+    Query query1 = queries[0];
+    REQUIRE(query1 == R"(REPLACE INTO `table` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('TTMI', 15.96, 16.335, 15.96, 16.08, 5416, 0, 1673298000000, 394280, 16.1078);)");
+    Query query2 = queries[1];
+    REQUIRE(query2 == R"(REPLACE INTO `table` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('OEC', 18.67, 19.43, 18.45, 18.98, 8130, 0, 1673298000000, 485157, 19.0627);)");
+    Query query3 = queries[2];
+    REQUIRE(query3 == R"(REPLACE INTO `table` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('USDU', 25.92, 25.95, 25.8204, 25.88, 2417, 0, 1673298000000, 642813, 25.8745);)");
+    Query query4 = queries[3];
+    REQUIRE(query4 == R"(REPLACE INTO `table` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('TTMIA', 15.96, 16.335, 15.96, 16.08, 5416, 0, 1673298000000, 394280, 16.1078);)");
+    Query query5 = queries[4];
+    REQUIRE(query5 == R"(REPLACE INTO `table` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('OECA', 18.67, 19.43, 18.45, 18.98, 8130, 0, 1673298000000, 485157, 19.0627);)");
+    Query query6 = queries[5];
+    REQUIRE(query6 == R"(REPLACE INTO `table` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('USDUA', 25.92, 25.95, 25.8204, 25.88, 2417, 0, 1673298000000, 642813, 25.8745);)");
+
+}
