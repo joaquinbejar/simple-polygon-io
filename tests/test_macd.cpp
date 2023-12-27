@@ -876,6 +876,7 @@ TEST_CASE("Json to Result Query", "[macd]") {
     params.set_long_window(40);
     params.set_signal_window(10);
     params.set_series_type(SeriesType::CLOSE);
+    params.set_stockticker("AAPL");
 
     json j = R"({
   "results": {
@@ -938,6 +939,7 @@ TEST_CASE("Json to Result Query", "[macd]") {
 })"_json;
 
     JsonResponse response = JsonResponse("AAPL", j);
+    response.set_macd_params(params);
     REQUIRE(response.status == "OK");
     REQUIRE(response.request_id == "42f0a812b3764e2a46a2b38b183896ae");
     REQUIRE(response.error_found == false);
@@ -959,3 +961,160 @@ TEST_CASE("Json to Result Query", "[macd]") {
     REQUIRE(query5 == R"(REPLACE INTO `OHLC` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('AAPL', 187.845, 189.5, 187.78, 188.01, 564159, 0, 1700024400000, 53608999, 188.419);)");
 }
 
+TEST_CASE("Merge JsonResponse", "[macd]") {
+    MacdParams params;
+    params.set_timespan(Timespan::DAY);
+    params.set_short_window(14);
+    params.set_long_window(40);
+    params.set_signal_window(10);
+    params.set_series_type(SeriesType::CLOSE);
+
+    json j1 = R"({
+  "results": {
+    "underlying": {
+      "aggregates": [
+        {
+          "T": "AAPL",
+          "v": 28921584,
+          "vw": 193.1713,
+          "o": 193.61,
+          "c": 193.05,
+          "h": 193.89,
+          "l": 192.83,
+          "t": 1703566800000,
+          "n": 488260
+        },
+        {
+          "T": "AAPL",
+          "v": 37149570,
+          "vw": 194.1013,
+          "o": 195.18,
+          "c": 193.6,
+          "h": 195.41,
+          "l": 192.97,
+          "t": 1703221200000,
+          "n": 500544
+        },
+        {
+          "T": "AAPL",
+          "v": 53608999,
+          "vw": 188.4191,
+          "o": 187.845,
+          "c": 188.01,
+          "h": 189.5,
+          "l": 187.78,
+          "t": 1700024400000,
+          "n": 564159
+        }
+      ],
+      "url": "https://api.polygon.io/v2/aggs/ticker/AAPL/range/1/day/1063281600000/1703671572914?limit=121&sort=desc"
+    },
+    "values": [
+      {
+        "timestamp": 1703566800000,
+        "value": 2.3056787672858547,
+        "signal": 3.0496880352097175,
+        "histogram": -0.7440092679238628
+      },
+      {
+        "timestamp": 1703221200000,
+        "value": 2.6356372673496082,
+        "signal": 3.235690352190683,
+        "histogram": -0.6000530848410746
+      }
+    ]
+  },
+  "status": "OK",
+  "request_id": "42f0a812b3764e2a46a2b38b183896ae",
+  "next_url": "https://api.polygon.io/v1/indicators/macd/AAPL?cursor=YWRqdXN0ZWQ9dHJ1ZSZhcD0lN0IlMjJ2JTIyJTNBMCUyQyUyMm8lMjIlM0EwJTJDJTIyYyUyMiUzQTE5NC42OCUyQyUyMmglMjIlM0EwJTJDJTIybCUyMiUzQTAlMkMlMjJ0JTIyJTNBMTcwMzEzNDgwMDAwMCU3RCZhcz0mZXhwYW5kX3VuZGVybHlpbmc9dHJ1ZSZsaW1pdD0yJmxvbmdfd2luZG93PTI2Jm9yZGVyPWRlc2Mmc2VyaWVzX3R5cGU9Y2xvc2Umc2hvcnRfd2luZG93PTEyJnNpZ25hbF93aW5kb3c9OSZ0aW1lc3Bhbj1kYXkmdGltZXN0YW1wLmx0PTE3MDMyMjEyMDAwMDA"
+})"_json;
+    json j2 = R"({
+                  "results": {
+                    "underlying": {
+                      "aggregates": [
+                        {
+                          "T": "A",
+                          "v": 3063839,
+                          "vw": 114.0836,
+                          "o": 113.25,
+                          "c": 113.98,
+                          "h": 114.5,
+                          "l": 112.39,
+                          "t": 1700456400000,
+                          "n": 47373
+                        },
+                        {
+                          "T": "A",
+                          "v": 2700771,
+                          "vw": 113.0618,
+                          "o": 113.98,
+                          "c": 113.15,
+                          "h": 114.47,
+                          "l": 112.06,
+                          "t": 1700197200000,
+                          "n": 42245
+                        },
+                        {
+                          "T": "A",
+                          "v": 1728065,
+                          "vw": 114.0644,
+                          "o": 113.94,
+                          "c": 114.19,
+                          "h": 114.5,
+                          "l": 113.56,
+                          "t": 1700110800000,
+                          "n": 30882
+                        }
+                      ],
+                      "url": "https://api.polygon.io/v2/aggs/ticker/A/range/1/day/1063281600000/1703688351940?limit=121&sort=desc"
+                    },
+                    "values": [
+                      {
+                        "timestamp": 1703653200000,
+                        "value": 5.653971134191266,
+                        "signal": 5.5992201650809665,
+                        "histogram": 0.05475096911029986
+                      },
+                      {
+                        "timestamp": 1703566800000,
+                        "value": 5.775492648973653,
+                        "signal": 5.58553242280339,
+                        "histogram": 0.1899602261702631
+                      }
+                    ]
+                  },
+                  "status": "OK",
+                  "request_id": "e91071799f205b0933b3e068df38d2a4",
+                  "next_url": "https://api.polygon.io/v1/indicators/macd/A?cursor=YWRqdXN0ZWQ9dHJ1ZSZhcD0lN0IlMjJ2JTIyJTNBMCUyQyUyMm8lMjIlM0EwJTJDJTIyYyUyMiUzQTEzOS41NyUyQyUyMmglMjIlM0EwJTJDJTIybCUyMiUzQTAlMkMlMjJ0JTIyJTNBMTcwMzIyMTIwMDAwMCU3RCZhcz0mZXhwYW5kX3VuZGVybHlpbmc9dHJ1ZSZsaW1pdD0yJmxvbmdfd2luZG93PTI2Jm9yZGVyPWRlc2Mmc2VyaWVzX3R5cGU9Y2xvc2Umc2hvcnRfd2luZG93PTEyJnNpZ25hbF93aW5kb3c9OSZ0aW1lc3Bhbj1kYXkmdGltZXN0YW1wLmx0PTE3MDM1NjY4MDAwMDA"
+                })"_json;
+
+    JsonResponse response1 = JsonResponse("AAPL", j1);
+    JsonResponse response2 = JsonResponse("A", j2);
+
+    params.set_stockticker("AAPL");
+    response1.set_macd_params(params);
+    params.set_stockticker("A");
+    response2.set_macd_params(params);
+    Queries queries1 = response1.queries("table");
+    Queries queries2 = response2.queries("table");
+
+    Queries queries;
+    for (auto &query: queries1) {
+        queries.push_back(query);
+    }
+    for (auto &query: queries2) {
+        queries.push_back(query);
+    }
+    response1.merge(response2);
+
+    REQUIRE(response1.queries("table").at(0) == queries.at(0));
+    REQUIRE(response1.queries("table").at(1) == queries.at(1));
+    REQUIRE(response1.queries("table").at(2) == queries.at(5));
+    REQUIRE(response1.queries("table").at(3) == queries.at(6));
+    REQUIRE(response1.queries("table").at(4) == queries.at(2));
+    REQUIRE(response1.queries("table").at(5) == queries.at(3));
+    REQUIRE(response1.queries("table").at(6) == queries.at(4));
+    REQUIRE(response1.queries("table").at(7) == queries.at(7));
+    REQUIRE(response1.queries("table").at(8) == queries.at(8));
+    REQUIRE(response1.queries("table").at(9) == queries.at(9));
+}

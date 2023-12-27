@@ -207,6 +207,7 @@ namespace simple_polygon_io::macd {
 
     struct Values {
     private:
+        std::string m_stockticker;
         Timespan m_timespan = Timespan::NONE;
         size_t m_short_window = 12;
         size_t m_long_window = 26;
@@ -222,7 +223,7 @@ namespace simple_polygon_io::macd {
 
         void set_macd_params(const MacdParams &macd_params);
 
-        Query query(const std::string &table, const std::string &ticker) const;
+        Query query(const std::string &table) const;
     };
 
     struct Result {
@@ -254,7 +255,7 @@ namespace simple_polygon_io::macd {
 
         JsonResponse();
 
-//        void merge(const JsonResponse &response);
+        void merge(const JsonResponse &response);
 
         void set_macd_params(const MacdParams &macd_params);
 
