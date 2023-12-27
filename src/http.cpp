@@ -68,6 +68,14 @@ namespace simple_polygon_io::http {
         return result;
     }
 
+    json HTTPClient::get_json_one_page(const PathParams &path_params) {
+        json result = m_get_json(path_params);
+        if (result.is_null())
+            return result;
+        result.erase("next_url");
+        return result;
+    }
+
 
     /**
      * Internal method to perform a GET request and retrieve JSON data.

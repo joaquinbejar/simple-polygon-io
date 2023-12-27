@@ -33,6 +33,21 @@ namespace simple_polygon_io::macd {
         YEAR = 7
     };
 
+    const std::map<Timespan, std::string> TimespanNames = {
+            {Timespan::MINUTE,  "minute"},
+            {Timespan::HOUR, "hour"},
+            {Timespan::DAY,  "day"},
+            {Timespan::WEEK,  "week"},
+            {Timespan::MONTH,  "month"},
+            {Timespan::QUARTER,  "quarter"},
+            {Timespan::YEAR,  "year"},
+            {Timespan::NONE,  ""}
+    };
+
+    std::string get_timespan_name(Timespan timespan);
+
+    Timespan get_timespan_from_string(const std::string &timespan);
+
     enum class Adjusted {
         NONE = 0,
         TRUE = 1,
@@ -104,7 +119,7 @@ namespace simple_polygon_io::macd {
     class MacdParams {
     private:
         //Query by timestamp. Either a date with the format YYYY-MM-DD or a millisecond timestamp.
-        std::string m_timestamp = ::common::dates::get_current_date();
+        std::string m_timestamp;
         std::string m_timestamp_gte;
         std::string m_timestamp_gt;
         std::string m_timestamp_lte;
@@ -118,7 +133,7 @@ namespace simple_polygon_io::macd {
         SeriesType m_series_type = SeriesType::NONE;
         ExpandUnderlying m_expand_underlying = ExpandUnderlying::NONE;
         Order m_order = Order::NONE;
-        size_t m_limit = 100;
+        size_t m_limit = 1;
 
 
     public:
@@ -191,39 +206,57 @@ namespace simple_polygon_io::macd {
     };
 
     struct Values {
+    private:
+        Timespan m_timespan = Timespan::NONE;
+        size_t m_short_window = 12;
+        size_t m_long_window = 26;
+        size_t m_signal_window = 9;
+        SeriesType m_series_type = SeriesType::NONE;
+    public:
         size_t timestamp;
         double value;
         double signal;
         double histogram;
 
         explicit Values(const json &j);
+
+        void set_macd_params(const MacdParams &macd_params);
+
+        Query query(const std::string &table, const std::string &ticker) const;
     };
 
     struct Result {
+    private:
+        std::string m_ticker{};
+    public:
         std::vector<simple_polygon_io::ohlc::Result> ohlc;
         std::vector<Values> values;
 
-        explicit Result(const json &values);
-        explicit Result(const json &values, const json &aggregates);
+        explicit Result(const std::string &ticker, const json &values);
+        explicit Result(const std::string &ticker, const json &values, const json &aggregates);
         Result();
 
-        [[nodiscard]] Query query(const std::string &table) const;
+        [[nodiscard]] Queries queries(const std::string &table) const;
     };
 
     struct JsonResponse : simple_polygon_io::common::BaseJsonResponse {
+    private:
+        std::string m_ticker{};
+    public:
         size_t count;
-
         std::string request_id;
         Result result{};
         std::string status;
         bool error_found = false;
         std::string error_message;
 
-        explicit JsonResponse(const json &j);
+        explicit JsonResponse(const std::string &ticker, const json &j);
 
         JsonResponse();
 
-        void merge(const JsonResponse &response);
+//        void merge(const JsonResponse &response);
+
+        void set_macd_params(const MacdParams &macd_params);
 
         [[nodiscard]] Queries queries(const std::string &table) const override;
     };

@@ -42,4 +42,19 @@ namespace simple_polygon_io::client {
         }
     }
 
+    simple_polygon_io::macd::JsonResponse PolygonIOClient::get_macd(const MacdParams &params) const {
+//        try {
+//            HTTPClient http_client = HTTPClient(m_config);
+//            std::string url  = OHLC_PATH + params.get_date();
+//            PathParams path_params = {url, params};
+//            json j = http_client.get_json(path_params);
+//            ohlc::JsonResponse response = ohlc::JsonResponse(j);
+//            return response;
+//        } catch (std::exception &e) {
+//            m_config.logger->send<simple_logger::LogLevel::ERROR>("Error getting macd: " + std::string(e.what()));
+//            throw e;
+//        }
+
+    return simple_polygon_io::macd::JsonResponse();
+    }
 }

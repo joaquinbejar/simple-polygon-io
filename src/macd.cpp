@@ -5,6 +5,16 @@
 
 namespace simple_polygon_io::macd {
 
+    std::string get_timespan_name(Timespan timespan) {
+        return TimespanNames.at(timespan);
+    }
+
+    Timespan get_timespan_from_string(const std::string &timespan) {
+        auto it = std::find_if(TimespanNames.begin(), TimespanNames.end(),
+                               [&timespan](const auto &pair) { return pair.second == timespan; });
+        return (it != TimespanNames.end()) ? it->first : Timespan::NONE;
+    }
+
     std::string get_adjusted_name(Adjusted adjusted) {
         return AdjustedNames.at(adjusted);
     }
@@ -23,19 +33,19 @@ namespace simple_polygon_io::macd {
         return (it != SeriesTypeNames.end()) ? it->first : SeriesType::NONE;
     }
 
-    std::string get_expand_underlying_name(ExpandUnderlying expand_underlying){
+    std::string get_expand_underlying_name(ExpandUnderlying expand_underlying) {
         return ExpandUnderlyingNames.at(expand_underlying);
     }
 
-    ExpandUnderlying get_expand_underlying_from_string(const bool &expand_underlying){
+    ExpandUnderlying get_expand_underlying_from_string(const bool &expand_underlying) {
         return expand_underlying ? ExpandUnderlying::TRUE : ExpandUnderlying::FALSE;
     }
 
-    std::string get_order_name(Order order){
+    std::string get_order_name(Order order) {
         return OrderNames.at(order);
     }
 
-    Order get_order_from_string(const std::string &order){
+    Order get_order_from_string(const std::string &order) {
         auto it = std::find_if(OrderNames.begin(), OrderNames.end(),
                                [&order](const auto &pair) { return pair.second == order; });
         return (it != OrderNames.end()) ? it->first : Order::NONE;
@@ -162,10 +172,16 @@ namespace simple_polygon_io::macd {
         return m_limit;
     }
 
-    
+
     MacdParams::operator ParamsMap() const {
         ParamsMap params;
         params["timestamp"] = m_timestamp;
+        params["timestamp_gte"] = m_timestamp_gte;
+        params["timestamp_gt"] = m_timestamp_gt;
+        params["timestamp_lte"] = m_timestamp_lte;
+        params["timestamp_lt"] = m_timestamp_lt;
+        params["stockticker"] = m_stockticker;
+        params["timespan"] = get_timespan_name(m_timespan);
         params["adjusted"] = get_adjusted_name(m_adjusted);
         params["short_window"] = std::to_string(m_short_window);
         params["long_window"] = std::to_string(m_long_window);
@@ -185,7 +201,8 @@ namespace simple_polygon_io::macd {
         return params;
     }
 
-    Values::Values(const json &j){
+    Values::Values(const json &j) {
+//        std::cout << j.dump(4) << std::endl;
         try {
             j.at("timestamp").get_to(timestamp);
             j.at("value").get_to(value);
@@ -196,7 +213,45 @@ namespace simple_polygon_io::macd {
         }
     }
 
-    Result::Result(const json &values) {
+    void Values::set_macd_params(const MacdParams &macd_params) {
+        m_timespan = macd_params.get_timespan();
+        m_short_window = macd_params.get_short_window();
+        m_long_window = macd_params.get_long_window();
+        m_signal_window = macd_params.get_signal_window();
+        m_series_type = macd_params.get_series_type();
+    }
+
+    Query Values::query(const std::string &table, const std::string &ticker) const {
+        if (ticker.empty()) {
+            throw std::runtime_error("Error parsing simple_polygon_io::macd::Values: ticker was not set");
+        }
+        if (m_timespan == Timespan::NONE) {
+            throw std::runtime_error("Error parsing simple_polygon_io::macd::Values: Params was not set");
+        }
+        if (m_series_type == SeriesType::NONE) {
+            throw std::runtime_error("Error parsing simple_polygon_io::macd::Values: Params was not set");
+        }
+        std::stringstream query;
+        query << "REPLACE INTO `" + table +
+                 "` (`ticker`, `timestamp`, `value`, `signal`, `histogram`, `timespan`, `short_window`, `long_window`, "
+                 "`signal_window`, `series_type`) VALUES ("
+                 << "'" << ticker << "', "
+                    << "" << timestamp << ", "
+                    << "" << value << ", "
+                    << "" << signal << ", "
+                    << "" << histogram << ", "
+                    << "'" << get_timespan_name(m_timespan) << "', "
+                    << "" << m_short_window << ", "
+                    << "" << m_long_window << ", "
+                    << "" << m_signal_window << ", "
+                    << "'" << get_series_type_name(m_series_type) << "');";
+        return Query(query.str());
+    }
+
+    Result::Result(const std::string &ticker, const json &values) {
+        if (m_ticker.empty()) {
+            m_ticker = ticker;
+        }
         try {
             for (const auto &value: values) {
                 this->values.emplace_back(value);
@@ -205,37 +260,42 @@ namespace simple_polygon_io::macd {
             throw std::runtime_error("Error parsing simple_polygon_io::macd::Result values: " + std::string(e.what()));
         }
     }
-    Result::Result(const json &values, const json &aggregates) {
+
+    Result::Result(const std::string &ticker, const json &values, const json &aggregates) {
         try {
-            Result result(values);
+            m_ticker = ticker;
+            this->values = Result(ticker, values).values;
             for (const auto &aggregate: aggregates) {
-                result.ohlc.emplace_back(aggregate);
+                auto it = ohlc::Result(aggregate);
+                if (!it.T.empty()) {
+                    this->ohlc.emplace_back(it);
+                    continue;
+                }
             }
         } catch (std::exception &e) {
-            throw std::runtime_error("Error parsing simple_polygon_io::macd::Result values & aggregates: " + std::string(e.what()));
+            throw std::runtime_error(
+                    "Error parsing simple_polygon_io::macd::Result values & aggregates: " + std::string(e.what()));
         }
     }
+
     Result::Result() = default;
 
-    Query Result::query(const std::string &table) const {
-        std::stringstream query;
-        query << "REPLACE INTO `" + table +
-                 "` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, "
-                 "`otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ("
-              << "'" << T << "', "
-              << "" << o << ", "
-              << "" << h << ", "
-              << "" << l << ", "
-              << "" << c << ", "
-              << "" << n << ", "
-              << "" << otc << ", "
-              << "" << t << ", "
-              << "" << v << ", "
-              << "" << vw << ");";
-        return ::common::sql_utils::empty_to_null(query.str());
+    Queries Result::queries(const std::string &table) const {
+        Queries queries;
+
+        for (const auto &value: values) {
+            queries.emplace_back(value.query(table, m_ticker));
+        }
+        for (const auto &aggregate: ohlc) {
+            queries.emplace_back(aggregate.query("OHLC"));
+        }
+        return queries;
     }
 
-    JsonResponse::JsonResponse(const json &j) {
+    JsonResponse::JsonResponse(const std::string &ticker, const json &j) : m_ticker(ticker){
+        if (m_ticker.empty()) {
+            throw std::runtime_error("Error parsing simple_polygon_io::macd::JsonResponse: ticker was not set");
+        }
         if (j == nullptr) {
             throw std::runtime_error("Error parsing simple_polygon_io::macd::JsonResponse: empty JSON");
         }
@@ -249,22 +309,23 @@ namespace simple_polygon_io::macd {
             error_message = "No values in results found in response";
             return;
         }
-        auto values = &j.at("results").at("values");
-
         if (!j.at("results").contains("underlying")) {
             error_found = true;
             error_message = "No underlying in results found in response";
             return;
         }
 
+        auto values = &j.at("results").at("values");
+
         try {
             j.at("request_id").get_to(request_id);
             j.at("status").get_to(status);
 
             if (j.at("results").at("underlying").contains("aggregates")) {
-                result = Result(*values, j.at("results").at("underlying").at("aggregates"));
+                result = Result(m_ticker, *values, j.at("results").at("underlying").at("aggregates"));
             } else {
-                result = Result(*values);
+
+                result = Result(m_ticker, *values);
             }
             count = result.values.size();
         } catch (std::exception &e) {
@@ -281,26 +342,26 @@ namespace simple_polygon_io::macd {
         count = 0;
     };
 
-    void JsonResponse::merge(const JsonResponse &response) {
-        if (response.error_found) {
-            error_found = true;
-            error_message = response.error_message;
+
+//    void JsonResponse::merge(const JsonResponse &response) {
+//        if (response.error_found) {
+//            error_found = true;
+//            error_message = response.error_message;
+//        }
+//        count += response.count;
+//        request_id = response.request_id;
+//        status = response.status;
+//        result.values.insert(result.values.end(), response.result.values.begin(), response.result.values.end());
+//        result.ohlc.insert(result.ohlc.end(), response.result.ohlc.begin(), response.result.ohlc.end());
+//    }
+
+    void JsonResponse::set_macd_params(const MacdParams &macd_params) {
+        for (auto &value: result.values) {
+            value.set_macd_params(macd_params);
         }
-        results.insert(results.end(), response.results.begin(), response.results.end());
-        count += response.count;
-        queryCount += response.queryCount;
-        resultsCount += response.resultsCount;
-        adjusted = response.adjusted == adjusted ? response.adjusted : Adjusted::TRUE;
-        request_id = response.request_id;
-        status = response.status;
     }
 
     Queries JsonResponse::queries(const std::string &table) const {
-        Queries queries;
-        for (const auto &result: results) {
-            queries.emplace_back(result.query(table));
-        }
-        return queries;
+        return this->result.queries(table);
     }
-
 }

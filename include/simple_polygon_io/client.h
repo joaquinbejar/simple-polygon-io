@@ -15,11 +15,16 @@
 namespace simple_polygon_io::client {
 
     using simple_polygon_io::http::HTTPClient;
-    using simple_polygon_io::tickers::TickersParams;
-    using simple_polygon_io::ohlc::OhlcParams;
-    using simple_polygon_io::tickers::TICKERS_PATH;
-    using simple_polygon_io::ohlc::OHLC_PATH;
     using simple_polygon_io::http::PathParams;
+
+    using simple_polygon_io::tickers::TickersParams;
+    using simple_polygon_io::tickers::TICKERS_PATH;
+
+    using simple_polygon_io::ohlc::OHLC_PATH;
+    using simple_polygon_io::ohlc::OhlcParams;
+
+    using simple_polygon_io::macd::MACD_PATH;
+    using simple_polygon_io::macd::MacdParams;
 
 
     class PolygonIOClient {
@@ -39,6 +44,8 @@ namespace simple_polygon_io::client {
         [[nodiscard]] simple_polygon_io::tickers::JsonResponse get_tickers(const TickersParams &params) const;
 
         [[nodiscard]] simple_polygon_io::ohlc::JsonResponse get_ohlc(const OhlcParams &params) const;
+
+        [[nodiscard]] simple_polygon_io::macd::JsonResponse get_macd(const MacdParams &params) const;
 
     private:
         simple_polygon_io::config::PolygonIOConfig &m_config;
