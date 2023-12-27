@@ -80,7 +80,7 @@ namespace simple_polygon_io::ohlc {
             vw = j.contains("vw") ? j.at("vw").get<double>() : 0;
             // otc field may exist
             if (j.contains("otc")) {
-                otc = j.at("otc").get<bool>();
+                otc = j.at("otc").get<bool>() ? 1 : 0;
             }
         } catch (std::exception &e) {
             throw std::runtime_error("Error parsing simple_polygon_io::ohlc::Result: " + std::string(e.what()));

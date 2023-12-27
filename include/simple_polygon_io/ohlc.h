@@ -103,7 +103,7 @@ namespace simple_polygon_io::ohlc {
         size_t t = 0;
         size_t v = 0;
         double vw = 0;
-        bool otc;
+        bool otc = false;
 
 
         explicit Result(const json &j);
