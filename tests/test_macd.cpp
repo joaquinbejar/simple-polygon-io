@@ -125,7 +125,6 @@ TEST_CASE("MacdParams Tests", "[macd]") {
     }
 }
 
-
 TEST_CASE("MacdParams Empty Tests", "[macd]") {
 
     SECTION("Check parameters map") {
@@ -161,7 +160,6 @@ TEST_CASE("MacdParams Empty Tests", "[macd]") {
         REQUIRE(params_map["series_type"] == "close");
     }
 }
-
 
 TEST_CASE("Json to Result", "[macd]") {
     json j = R"({
