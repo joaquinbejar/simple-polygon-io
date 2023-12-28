@@ -84,6 +84,7 @@ TEST_CASE("Testing PolygonIOManager OHLC", "[ohlc]") {
         REQUIRE(ohlc.count == 0);
         REQUIRE(ohlc.results.empty());
         REQUIRE(ohlc.queries("table").empty());
+
     }
 }
 
