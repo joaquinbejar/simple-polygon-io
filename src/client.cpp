@@ -31,7 +31,7 @@ namespace simple_polygon_io::client {
     simple_polygon_io::ohlc::JsonResponse PolygonIOClient::get_ohlc(const OhlcParams &params) const {
         try {
             HTTPClient http_client = HTTPClient(m_config);
-            std::string url  = OHLC_PATH + params.get_date();
+            std::string url = OHLC_PATH + params.get_date();
             PathParams path_params = {url, params};
             json j = http_client.get_json(path_params);
             ohlc::JsonResponse response = ohlc::JsonResponse(j);
@@ -42,4 +42,40 @@ namespace simple_polygon_io::client {
         }
     }
 
+    simple_polygon_io::macd::JsonResponse PolygonIOClient::get_macd(const MacdParams &params) const {
+        try {
+            HTTPClient http_client = HTTPClient(m_config);
+            std::string url = MACD_PATH + params.get_stockticker();
+            PathParams path_params = {url, params};
+            json j = http_client.get_json(path_params);
+            macd::JsonResponse response = macd::JsonResponse(params.get_stockticker(), j);
+            return response;
+        } catch (std::exception &e) {
+            m_config.logger->send<simple_logger::LogLevel::ERROR>("Error getting macd: " + std::string(e.what()));
+            throw e;
+        }
+    }
+
+    TickersNames get_tickers_names(PolygonIOClient &client, config::PolygonIOConfig &config, size_t limit) {
+        try {
+            config.logger->send<simple_logger::LogLevel::NOTICE>("Getting tickers");
+            auto params = simple_polygon_io::tickers::TickersParams(); // Define params closer to usage
+            params.set_market(simple_polygon_io::tickers::Market::STOCKS);
+            auto tickers_response = client.get_tickers(params);
+            TickersNames tickers;
+            for (const auto &result: tickers_response.results) {
+                tickers.push_back(result.ticker);
+            }
+            config.logger->send<simple_logger::LogLevel::NOTICE>("Got tickers");
+            if (limit == 0) {
+                return tickers;
+            }
+
+            TickersNames firstFive(tickers.begin(), tickers.begin() + (long) limit);
+            return firstFive;
+        } catch (std::exception &e) {
+            config.logger->send<simple_logger::LogLevel::ERROR>("Error getting tickers: " + std::string(e.what()));
+            return {};
+        }
+    }
 }

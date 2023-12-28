@@ -126,3 +126,23 @@ target_link_libraries(test_ohlc PRIVATE
         common
         simple_polygon_io
 )
+
+
+add_executable(test_macd test_macd.cpp)
+target_include_directories(test_macd
+        PRIVATE
+        ${SIMPLE_POLYGON_IO_INCLUDE}
+        ${SIMPLE_COLOR_INCLUDE}
+        ${SIMPLE_CONFIG_INCLUDE}
+        ${SIMPLE_LOGGER_INCLUDE}
+        ${NLOHMANN_JSON_INCLUDE}
+        ${COMMON_INCLUDE}
+)
+
+target_link_libraries(test_macd PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(test_macd PRIVATE
+        simple_logger
+        simple_config
+        common
+        simple_polygon_io
+)

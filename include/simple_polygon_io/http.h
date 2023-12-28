@@ -31,6 +31,8 @@ namespace simple_polygon_io::http {
 
         json get_json(const PathParams &path_params);
 
+        json get_json_one_page(const PathParams &path_params);
+
         static std::string remove_host_and_port(const std::string &url);
 
         std::shared_ptr<simple_logger::Logger> logger;
