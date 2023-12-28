@@ -221,6 +221,22 @@ namespace simple_polygon_io::macd {
         m_stockticker = macd_params.get_stockticker();
     }
 
+    json Values::to_json() const {
+        json j;
+        j["timestamp"] = timestamp;
+        j["value"] = value;
+        j["signal"] = signal;
+        j["histogram"] = histogram;
+        j["ticker"] = m_stockticker;
+        j["timespan"] = get_timespan_name(m_timespan);
+        j["short_window"] = m_short_window;
+        j["long_window"] = m_long_window;
+        j["signal_window"] = m_signal_window;
+        j["series_type"] = get_series_type_name(m_series_type);
+
+        return j;
+    }
+
     Query Values::query(const std::string &table) const {
         if (m_stockticker.empty()) {
             throw std::runtime_error("Error parsing simple_polygon_io::macd::Values: ticker was not set");
@@ -352,6 +368,9 @@ namespace simple_polygon_io::macd {
         request_id = response.request_id;
         status = response.status;
         result.values.insert(result.values.end(), response.result.values.begin(), response.result.values.end());
+        for (const auto &value: response.result.values) {
+            std::cout << value.to_json() << std::endl;
+        }
         result.ohlc.insert(result.ohlc.end(), response.result.ohlc.begin(), response.result.ohlc.end());
     }
 
@@ -359,7 +378,6 @@ namespace simple_polygon_io::macd {
         if (macd_params.get_stockticker().empty())
             throw std::runtime_error("Error parsing simple_polygon_io::macd::JsonResponse::set_macd_params: ticker was not set");
         for (auto &value: result.values) {
-
             value.set_macd_params(macd_params);
         }
     }

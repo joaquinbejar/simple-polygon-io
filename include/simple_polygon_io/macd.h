@@ -223,6 +223,8 @@ namespace simple_polygon_io::macd {
 
         void set_macd_params(const MacdParams &macd_params);
 
+        json to_json() const;
+
         Query query(const std::string &table) const;
     };
 
