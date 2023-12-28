@@ -133,40 +133,30 @@ TEST_CASE("Testing Merge and queries MACD", "[macd]") {
     config::PolygonIOConfig config;
     client::PolygonIOClient client(config);
 
-    SECTION("short get macd 1") {
+    SECTION("valid") {
         macd::JsonResponse final_response;
         client::MacdParams macd_params;
         macd_params.set_timestamp("2020-10-14");
         macd_params.set_stockticker("AAPL");
         macd_params.set_adjusted(macd::Adjusted::TRUE);
-
-        final_response.merge(client.get_macd(macd_params));
-//        REQUIRE(final_response.queries("MACD").size() == 1);
-
+        macd_params.set_timespan(macd::Timespan::DAY);
+        macd_params.set_series_type(macd::SeriesType::CLOSE);
+        auto response = client.get_macd(macd_params);
+        response.set_macd_params(macd_params);
+        final_response.merge(response);
+        REQUIRE(final_response.queries("MACD").size() == 1);
     }
 
-//    SECTION("short get macd 2") {
-//        client::MacdParams macd_params;
-//        macd_params.set_timestamp("2023-10-16");
-//        macd_params.set_stockticker("A");
-//        macd_params.set_adjusted(macd::Adjusted::FALSE);
-//        auto macd = client.get_macd(macd_params);
-//        REQUIRE(macd.error_message.empty());
-//        REQUIRE(macd.error_found == false);
-//        REQUIRE(macd.count > 0);
-//        REQUIRE(!macd.result.values.empty());
-//    }
-//
-//    SECTION("short get macd empty day") {
-//        client::MacdParams macd_params;
-//        macd_params.set_stockticker("NVO");
-//        macd_params.set_timestamp("2023-10-14");
-//        macd_params.set_adjusted(macd::Adjusted::FALSE);
-//        auto macd = client.get_macd(macd_params);
-//        REQUIRE(macd.error_found == true);
-//        REQUIRE(!macd.error_message.empty());
-//        REQUIRE(macd.count == 1);
-//        REQUIRE(macd.result.values.empty());
-//        REQUIRE(macd.queries("table").empty());
-//    }
+    SECTION("fail") {
+        macd::JsonResponse final_response;
+        client::MacdParams macd_params;
+        macd_params.set_timestamp("2020-10-14");
+        macd_params.set_stockticker("AAPL");
+        macd_params.set_adjusted(macd::Adjusted::TRUE);
+        macd_params.set_timespan(macd::Timespan::DAY);
+        macd_params.set_series_type(macd::SeriesType::CLOSE);
+        final_response.merge(client.get_macd(macd_params));
+        REQUIRE_THROWS(final_response.queries("MACD").size() == 1);
+    }
+
 }

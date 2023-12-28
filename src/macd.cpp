@@ -368,9 +368,6 @@ namespace simple_polygon_io::macd {
         request_id = response.request_id;
         status = response.status;
         result.values.insert(result.values.end(), response.result.values.begin(), response.result.values.end());
-        for (const auto &value: response.result.values) {
-            std::cout << value.to_json() << std::endl;
-        }
         result.ohlc.insert(result.ohlc.end(), response.result.ohlc.begin(), response.result.ohlc.end());
     }
 
