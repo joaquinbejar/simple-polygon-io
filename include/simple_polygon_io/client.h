@@ -27,6 +27,9 @@ namespace simple_polygon_io::client {
     using simple_polygon_io::macd::MacdParams;
 
 
+    typedef std::vector<std::string> TickersNames;
+
+
     class PolygonIOClient {
     public:
         explicit PolygonIOClient(config::PolygonIOConfig &config);
@@ -50,6 +53,8 @@ namespace simple_polygon_io::client {
     private:
         simple_polygon_io::config::PolygonIOConfig &m_config;
     };
+
+    TickersNames get_tickers_names(PolygonIOClient &client, config::PolygonIOConfig &config, size_t limit = 0);
 
 }
 #endif //SIMPLE_POLYGON_IO_CLIENT_H
