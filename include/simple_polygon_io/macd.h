@@ -35,13 +35,13 @@ namespace simple_polygon_io::macd {
 
     const std::map<Timespan, std::string> TimespanNames = {
             {Timespan::MINUTE,  "minute"},
-            {Timespan::HOUR, "hour"},
-            {Timespan::DAY,  "day"},
-            {Timespan::WEEK,  "week"},
-            {Timespan::MONTH,  "month"},
-            {Timespan::QUARTER,  "quarter"},
-            {Timespan::YEAR,  "year"},
-            {Timespan::NONE,  ""}
+            {Timespan::HOUR,    "hour"},
+            {Timespan::DAY,     "day"},
+            {Timespan::WEEK,    "week"},
+            {Timespan::MONTH,   "month"},
+            {Timespan::QUARTER, "quarter"},
+            {Timespan::YEAR,    "year"},
+            {Timespan::NONE,    ""}
     };
 
     std::string get_timespan_name(Timespan timespan);
@@ -74,9 +74,9 @@ namespace simple_polygon_io::macd {
 
     const std::map<SeriesType, std::string> SeriesTypeNames = {
             {SeriesType::OPEN,  "open"},
-            {SeriesType::HIGH, "high"},
-            {SeriesType::LOW,  "low"},
-            {SeriesType::CLOSE,  "close"},
+            {SeriesType::HIGH,  "high"},
+            {SeriesType::LOW,   "low"},
+            {SeriesType::CLOSE, "close"},
             {SeriesType::NONE,  ""}
     };
 
@@ -139,66 +139,66 @@ namespace simple_polygon_io::macd {
     public:
 
         void set_timestamp(const std::string &timestamp);
-        
+
         void set_timestamp_gte(const std::string &timestamp_gte);
-        
+
         void set_timestamp_gt(const std::string &timestamp_gt);
-        
+
         void set_timestamp_lte(const std::string &timestamp_lte);
-        
+
         void set_timestamp_lt(const std::string &timestamp_lt);
-        
+
         void set_stockticker(const std::string &stockticker);
-        
+
         void set_timespan(Timespan timespan);
-        
+
         void set_adjusted(Adjusted adjusted);
-        
+
         void set_short_window(size_t short_window);
-        
+
         void set_long_window(size_t long_window);
-        
+
         void set_signal_window(size_t signal_window);
-        
+
         void set_series_type(SeriesType series_type);
-        
+
         void set_expand_underlying(ExpandUnderlying expand_underlying);
-        
+
         void set_order(Order order);
-        
+
         void set_limit(size_t limit);
 
         [[nodiscard]] const std::string &get_timestamp() const;
-        
+
         [[nodiscard]] const std::string &get_timestamp_gte() const;
-        
+
         [[nodiscard]] const std::string &get_timestamp_gt() const;
-        
+
         [[nodiscard]] const std::string &get_timestamp_lte() const;
-        
+
         [[nodiscard]] const std::string &get_timestamp_lt() const;
-        
+
         [[nodiscard]] const std::string &get_stockticker() const;
-        
+
         [[nodiscard]] Timespan get_timespan() const;
-        
+
         [[nodiscard]] Adjusted get_adjusted() const;
-        
+
         [[nodiscard]] size_t get_short_window() const;
-        
+
         [[nodiscard]] size_t get_long_window() const;
-        
+
         [[nodiscard]] size_t get_signal_window() const;
-        
+
         [[nodiscard]] SeriesType get_series_type() const;
-        
+
         [[nodiscard]] ExpandUnderlying get_expand_underlying() const;
-        
+
         [[nodiscard]] Order get_order() const;
-        
+
         [[nodiscard]] size_t get_limit() const;
 
-        
+
         // NOLINTNEXTLINE(clang-diagnostic-xxx, clang-analyzer-xxx)
         operator ParamsMap() const;
 
@@ -236,7 +236,9 @@ namespace simple_polygon_io::macd {
         std::vector<Values> values;
 
         explicit Result(const std::string &ticker, const json &values);
+
         explicit Result(const std::string &ticker, const json &values, const json &aggregates);
+
         Result();
 
         [[nodiscard]] Queries queries(const std::string &table) const;
@@ -263,6 +265,16 @@ namespace simple_polygon_io::macd {
 
         [[nodiscard]] Queries queries(const std::string &table) const override;
     };
+
+    MacdParams configure_params(MacdParams &params,
+                                Timespan timespan,
+                                int short_window,
+                                int long_window,
+                                int signal_window,
+                                SeriesType series_type);
+
+    std::vector<MacdParams> get_all_kind_params(MacdParams &params);
+
 }
 
 #endif //SIMPLE_POLYGON_IO_MACD_H

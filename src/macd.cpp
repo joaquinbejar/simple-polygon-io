@@ -251,16 +251,16 @@ namespace simple_polygon_io::macd {
         query << "REPLACE INTO `" + table +
                  "` (`ticker`, `timestamp`, `value`, `signal`, `histogram`, `timespan`, `short_window`, `long_window`, "
                  "`signal_window`, `series_type`) VALUES ("
-                 << "'" << m_stockticker << "', "
-                    << "" << timestamp << ", "
-                    << "" << value << ", "
-                    << "" << signal << ", "
-                    << "" << histogram << ", "
-                    << "'" << get_timespan_name(m_timespan) << "', "
-                    << "" << m_short_window << ", "
-                    << "" << m_long_window << ", "
-                    << "" << m_signal_window << ", "
-                    << "'" << get_series_type_name(m_series_type) << "');";
+              << "'" << m_stockticker << "', "
+              << "" << timestamp << ", "
+              << "" << value << ", "
+              << "" << signal << ", "
+              << "" << histogram << ", "
+              << "'" << get_timespan_name(m_timespan) << "', "
+              << "" << m_short_window << ", "
+              << "" << m_long_window << ", "
+              << "" << m_signal_window << ", "
+              << "'" << get_series_type_name(m_series_type) << "');";
         return Query(query.str());
     }
 
@@ -308,7 +308,7 @@ namespace simple_polygon_io::macd {
         return queries;
     }
 
-    JsonResponse::JsonResponse(const std::string &ticker, const json &j) : m_ticker(ticker){
+    JsonResponse::JsonResponse(const std::string &ticker, const json &j) : m_ticker(ticker) {
         if (m_ticker.empty()) {
             throw std::runtime_error("Error parsing simple_polygon_io::macd::JsonResponse: ticker was not set");
         }
@@ -373,7 +373,8 @@ namespace simple_polygon_io::macd {
 
     void JsonResponse::set_macd_params(const MacdParams &macd_params) {
         if (macd_params.get_stockticker().empty())
-            throw std::runtime_error("Error parsing simple_polygon_io::macd::JsonResponse::set_macd_params: ticker was not set");
+            throw std::runtime_error(
+                    "Error parsing simple_polygon_io::macd::JsonResponse::set_macd_params: ticker was not set");
         for (auto &value: result.values) {
             value.set_macd_params(macd_params);
         }
@@ -381,5 +382,39 @@ namespace simple_polygon_io::macd {
 
     Queries JsonResponse::queries(const std::string &table) const {
         return this->result.queries(table);
+    }
+
+    MacdParams configure_params(MacdParams &params,
+                                Timespan timespan,
+                                int short_window,
+                                int long_window,
+                                int signal_window,
+                                SeriesType series_type) {
+        params.set_timespan(timespan);
+        params.set_short_window(short_window);
+        params.set_long_window(long_window);
+        params.set_signal_window(signal_window);
+        params.set_series_type(series_type);
+        return params;
+    }
+
+    std::vector<MacdParams> get_all_kind_params(MacdParams &params) {
+        std::vector<MacdParams> result_params;
+        std::vector<std::tuple<Timespan, int, int, int, SeriesType>> setups{
+                {Timespan::DAY,  16, 24, 10, SeriesType::CLOSE},
+                {Timespan::WEEK, 16, 24, 10, SeriesType::CLOSE},
+                {Timespan::WEEK, 12, 40, 9,  SeriesType::HIGH},
+                {Timespan::DAY,  12, 40, 9,  SeriesType::HIGH}
+        };
+
+        for (auto setup: setups) {
+            result_params.push_back(configure_params(params, std::get<0>(setup),
+                                                     std::get<1>(setup),
+                                                     std::get<2>(setup),
+                                                     std::get<3>(setup),
+                                                     std::get<4>(setup)));
+        }
+
+        return result_params;
     }
 }
