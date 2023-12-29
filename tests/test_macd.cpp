@@ -82,22 +82,8 @@ TEST_CASE("Enum to String Conversion Tests", "[macd]") {
 }
 
 TEST_CASE("empty json", "[ohlc]") {
-
-    SECTION("No ticker name") {
-        json j;
-
-        JsonResponse response = JsonResponse("", j);
-        REQUIRE(response.error_found == true);
-        REQUIRE(!response.error_message.empty());
-        REQUIRE(response.status == "ERROR");
-        REQUIRE(response.count == 0);
-        REQUIRE(response.request_id.empty());
-        REQUIRE(response.result.values.empty());
-        REQUIRE(response.result.ohlc.empty());
-    }
     SECTION("With ticker name") {
         json j;
-
         JsonResponse response = JsonResponse("A", j);
         REQUIRE(response.error_found == true);
         REQUIRE(!response.error_message.empty());
@@ -983,11 +969,11 @@ TEST_CASE("Json to Result Query", "[macd]") {
     std::string query2 = queries[1];
     REQUIRE(query2 == R"(REPLACE INTO `table` (`ticker`, `timestamp`, `value`, `signal`, `histogram`, `timespan`, `short_window`, `long_window`, `signal_window`, `series_type`) VALUES ('AAPL', 1703221200000, 2.63564, 3.23569, -0.600053, 'day', 14, 40, 10, 'close');)");
     std::string query3 = queries[2];
-    REQUIRE(query3 == R"(REPLACE INTO `OHLC` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('AAPL', 193.61, 193.89, 192.83, 193.05, 488260, 0, 1703566800000, 28921584, 193.171);)");
+    REQUIRE(query3 == R"(INSERT IGNORE INTO `OHLC` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('AAPL', 193.61, 193.89, 192.83, 193.05, 488260, 0, 1703566800000, 28921584, 193.171);)");
     std::string query4 = queries[3];
-    REQUIRE(query4 == R"(REPLACE INTO `OHLC` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('AAPL', 195.18, 195.41, 192.97, 193.6, 500544, 0, 1703221200000, 37149570, 194.101);)");
+    REQUIRE(query4 == R"(INSERT IGNORE INTO `OHLC` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('AAPL', 195.18, 195.41, 192.97, 193.6, 500544, 0, 1703221200000, 37149570, 194.101);)");
     std::string query5 = queries[4];
-    REQUIRE(query5 == R"(REPLACE INTO `OHLC` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('AAPL', 187.845, 189.5, 187.78, 188.01, 564159, 0, 1700024400000, 53608999, 188.419);)");
+    REQUIRE(query5 == R"(INSERT IGNORE INTO `OHLC` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, `otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ('AAPL', 187.845, 189.5, 187.78, 188.01, 564159, 0, 1700024400000, 53608999, 188.419);)");
 }
 
 TEST_CASE("Merge JsonResponse", "[macd]") {

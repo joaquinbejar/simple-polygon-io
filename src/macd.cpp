@@ -303,7 +303,10 @@ namespace simple_polygon_io::macd {
             queries.emplace_back(value.query(table));
         }
         for (const auto &aggregate: ohlc) {
-            queries.emplace_back(aggregate.query("OHLC"));
+            Query query = aggregate.query("OHLC");
+            ::common::sql_utils::replace_insert_type(query, ::common::sql_utils::InsertType::IGNORE);
+            queries.emplace_back(query);
+//            queries.emplace_back(aggregate.query("OHLC"));
         }
         return queries;
     }
