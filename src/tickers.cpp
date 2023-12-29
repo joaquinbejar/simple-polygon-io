@@ -301,7 +301,11 @@ namespace simple_polygon_io::tickers {
 
     JsonResponse::JsonResponse(const json &j) {
         if (j == nullptr) {
-            throw std::runtime_error("Error parsing simple_polygon_io::tickers::JsonResponse: empty JSON");
+            error_found = true;
+            error_message = "Empty JSON as parameter";
+            status = "ERROR";
+            count = 0;
+            return;
         }
         try {
             j.at("request_id").get_to(request_id);
