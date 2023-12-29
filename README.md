@@ -1,4 +1,4 @@
-# simple_polygon_io v0.1.3
+# simple_polygon_io v0.1.4
 
 Simple library to handle call to Polygon.io REST API
 
