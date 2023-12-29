@@ -255,7 +255,7 @@ namespace simple_polygon_io::macd {
         bool error_found = false;
         std::string error_message;
 
-        explicit JsonResponse(const std::string &ticker, const json &j);
+        explicit JsonResponse(std::string ticker, const json &j);
 
         JsonResponse();
 

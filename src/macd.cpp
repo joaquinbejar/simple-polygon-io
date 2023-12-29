@@ -3,6 +3,8 @@
 //
 #include <simple_polygon_io/macd.h>
 
+#include <utility>
+
 namespace simple_polygon_io::macd {
 
     std::string get_timespan_name(Timespan timespan) {
@@ -306,12 +308,11 @@ namespace simple_polygon_io::macd {
             Query query = aggregate.query("OHLC");
             ::common::sql_utils::replace_insert_type(query, ::common::sql_utils::InsertType::IGNORE);
             queries.emplace_back(query);
-//            queries.emplace_back(aggregate.query("OHLC"));
         }
         return queries;
     }
 
-    JsonResponse::JsonResponse(const std::string &ticker, const json &j) : m_ticker(ticker) {
+    JsonResponse::JsonResponse(std::string ticker, const json &j) : m_ticker(std::move(ticker)) {
         if (m_ticker.empty()) {
             throw std::runtime_error("Error parsing simple_polygon_io::macd::JsonResponse: ticker was not set");
         }
