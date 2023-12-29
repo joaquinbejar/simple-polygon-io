@@ -313,7 +313,11 @@ namespace simple_polygon_io::macd {
             throw std::runtime_error("Error parsing simple_polygon_io::macd::JsonResponse: ticker was not set");
         }
         if (j == nullptr) {
-            throw std::runtime_error("Error parsing simple_polygon_io::macd::JsonResponse: empty JSON");
+            error_found = true;
+            error_message = "Empty JSON as parameter";
+            status = "ERROR";
+            count = 0;
+            return;
         }
         if (!j.contains("results")) {
             error_found = true;

@@ -115,6 +115,17 @@ TEST_CASE("Enum to String Conversion Tests", "[tickers]") {
     }
 }
 
+TEST_CASE("empty json", "[ohlc]") {
+    json j;
+    JsonResponse response = JsonResponse(j);
+    REQUIRE(response.error_found == true);
+    REQUIRE(!response.error_message.empty());
+    REQUIRE(response.status == "ERROR");
+    REQUIRE(response.count == 0);
+    REQUIRE(response.request_id.empty());
+    REQUIRE(response.results.empty());
+}
+
 TEST_CASE("TickersParams Tests", "[tickers]") {
     TickersParams params;
     // Set some values in params

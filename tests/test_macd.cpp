@@ -81,6 +81,35 @@ TEST_CASE("Enum to String Conversion Tests", "[macd]") {
 
 }
 
+TEST_CASE("empty json", "[ohlc]") {
+
+    SECTION("No ticker name") {
+        json j;
+
+        JsonResponse response = JsonResponse("", j);
+        REQUIRE(response.error_found == true);
+        REQUIRE(!response.error_message.empty());
+        REQUIRE(response.status == "ERROR");
+        REQUIRE(response.count == 0);
+        REQUIRE(response.request_id.empty());
+        REQUIRE(response.result.values.empty());
+        REQUIRE(response.result.ohlc.empty());
+    }
+    SECTION("With ticker name") {
+        json j;
+
+        JsonResponse response = JsonResponse("A", j);
+        REQUIRE(response.error_found == true);
+        REQUIRE(!response.error_message.empty());
+        REQUIRE(response.status == "ERROR");
+        REQUIRE(response.count == 0);
+        REQUIRE(response.request_id.empty());
+        REQUIRE(response.result.values.empty());
+        REQUIRE(response.result.ohlc.empty());
+    }
+
+}
+
 TEST_CASE("MacdParams Tests", "[macd]") {
     MacdParams params;
     params.set_timestamp("2023-11-24");
