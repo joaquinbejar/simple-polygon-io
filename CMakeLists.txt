@@ -63,7 +63,12 @@ target_link_libraries(simple_polygon_io
 set(SIMPLE_POLYGON_IO_TESTS_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 option(NO_POLYGON_IO_TESTS "simple_polygon_io Disable simple_polygon_io tests" OFF)
 if (NOT NO_POLYGON_IO_TESTS)
-#    set -DCURL_DISABLE_TESTS=ON to disable curl tests
+    FetchContent_Declare(Catch2
+            GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+            GIT_TAG v3.4.0
+    )
+    FETCHCONTENT_GETPROPERTIES(Catch2)
+    FETCHCONTENT_MAKEAVAILABLE(Catch2)
     set(CURL_DISABLE_TESTS ON)
     add_subdirectory(tests)
 endif ()
