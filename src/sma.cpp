@@ -116,10 +116,10 @@ namespace simple_polygon_io::sma {
     SmaParams::operator ParamsMap() const {
         ParamsMap params;
         params["timestamp"] = m_timestamp;
-        params["timestamp_gte"] = m_timestamp_gte;
-        params["timestamp_gt"] = m_timestamp_gt;
-        params["timestamp_lte"] = m_timestamp_lte;
-        params["timestamp_lt"] = m_timestamp_lt;
+        params["timestamp.gte"] = m_timestamp_gte;
+        params["timestamp.gt"] = m_timestamp_gt;
+        params["timestamp.lte"] = m_timestamp_lte;
+        params["timestamp.lt"] = m_timestamp_lt;
         params["stockticker"] = m_stockticker;
         params["timespan"] = get_timespan_name(m_timespan);
         params["adjusted"] = get_adjusted_name(m_adjusted);

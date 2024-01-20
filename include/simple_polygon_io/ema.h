@@ -30,11 +30,11 @@ namespace simple_polygon_io::ema {
         std::string m_stockticker;
         Timespan m_timespan = Timespan::NONE;
         Adjusted m_adjusted = Adjusted::NONE;
-        size_t m_window = 12;
+        size_t m_window = 30;
         SeriesType m_series_type = SeriesType::NONE;
         ExpandUnderlying m_expand_underlying = ExpandUnderlying::NONE;
         Order m_order = Order::NONE;
-        size_t m_limit = 1;
+        size_t m_limit = 1000;
 
 
     public:
@@ -156,9 +156,9 @@ namespace simple_polygon_io::ema {
     };
 
     EmaParams configure_params(EmaParams &params,
-                                Timespan timespan,
-                                int window,
-                                SeriesType series_type);
+                               Timespan timespan,
+                               int window,
+                               SeriesType series_type);
 
     std::vector<EmaParams> get_all_kind_params(EmaParams &params);
 
