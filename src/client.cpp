@@ -56,6 +56,34 @@ namespace simple_polygon_io::client {
         }
     }
 
+    simple_polygon_io::ema::JsonResponse PolygonIOClient::get_ema(const EmaParams &params) const {
+        try {
+            HTTPClient http_client = HTTPClient(m_config);
+            std::string url = EMA_PATH + params.get_stockticker();
+            PathParams path_params = {url, params};
+            json j = http_client.get_json(path_params);
+            ema::JsonResponse response = ema::JsonResponse(params.get_stockticker(), j);
+            return response;
+        } catch (std::exception &e) {
+            m_config.logger->send<simple_logger::LogLevel::ERROR>("Error getting ema: " + std::string(e.what()));
+            throw e;
+        }
+    }
+
+    simple_polygon_io::sma::JsonResponse PolygonIOClient::get_sma(const SmaParams &params) const {
+        try {
+            HTTPClient http_client = HTTPClient(m_config);
+            std::string url = SMA_PATH + params.get_stockticker();
+            PathParams path_params = {url, params};
+            json j = http_client.get_json(path_params);
+            sma::JsonResponse response = sma::JsonResponse(params.get_stockticker(), j);
+            return response;
+        } catch (std::exception &e) {
+            m_config.logger->send<simple_logger::LogLevel::ERROR>("Error getting sma: " + std::string(e.what()));
+            throw e;
+        }
+    }
+
     TickersNames get_tickers_names(PolygonIOClient &client, config::PolygonIOConfig &config, size_t limit) {
         try {
             config.logger->send<simple_logger::LogLevel::NOTICE>("Getting tickers");

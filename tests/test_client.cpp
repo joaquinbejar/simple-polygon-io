@@ -11,7 +11,6 @@ using namespace simple_polygon_io;
 
 // ---------------------------------------------------------------------------------------------------
 
-
 TEST_CASE("Testing PolygonIOManager tickers", "[tickers]") {
     config::PolygonIOConfig config;
     client::PolygonIOClient client(config);
@@ -160,4 +159,151 @@ TEST_CASE("Testing Merge and queries MACD", "[macd]") {
         REQUIRE_THROWS(final_response.queries("MACD").size() == 1);
     }
 
+}
+
+
+TEST_CASE("Testing PolygonIOManager EMA", "[ema]") {
+    config::PolygonIOConfig config;
+    client::PolygonIOClient client(config);
+
+    SECTION("short get ema 1") {
+        client::EmaParams ema_params;
+        ema_params.set_timestamp("2020-10-14");
+        ema_params.set_stockticker("AAPL");
+        ema_params.set_adjusted(ema::Adjusted::TRUE);
+        auto ema = client.get_ema(ema_params);
+        REQUIRE(ema.error_message.empty());
+        REQUIRE(ema.error_found == false);
+        REQUIRE(ema.count > 0);
+        REQUIRE(!ema.result.values.empty());
+    }
+
+    SECTION("short get ema 2") {
+        client::EmaParams ema_params;
+        ema_params.set_timestamp("2023-10-16");
+        ema_params.set_stockticker("A");
+        ema_params.set_adjusted(ema::Adjusted::FALSE);
+        auto ema = client.get_ema(ema_params);
+        REQUIRE(ema.error_message.empty());
+        REQUIRE(ema.error_found == false);
+        REQUIRE(ema.count > 0);
+        REQUIRE(!ema.result.values.empty());
+    }
+
+    SECTION("short get ema empty day") {
+        client::EmaParams ema_params;
+        ema_params.set_stockticker("NVO");
+        ema_params.set_timestamp("2023-10-14");
+        ema_params.set_adjusted(ema::Adjusted::FALSE);
+        auto ema = client.get_ema(ema_params);
+        REQUIRE(ema.error_found == true);
+        REQUIRE(!ema.error_message.empty());
+        REQUIRE(ema.count == 1);
+        REQUIRE(ema.result.values.empty());
+    }
+}
+
+TEST_CASE("Testing Merge and queries EMA", "[ema]") {
+    config::PolygonIOConfig config;
+    client::PolygonIOClient client(config);
+
+    SECTION("valid") {
+        ema::JsonResponse final_response;
+        client::EmaParams ema_params;
+        ema_params.set_timestamp("2020-10-14");
+        ema_params.set_stockticker("AAPL");
+        ema_params.set_adjusted(ema::Adjusted::TRUE);
+        ema_params.set_timespan(ema::Timespan::DAY);
+        ema_params.set_series_type(ema::SeriesType::CLOSE);
+        auto response = client.get_ema(ema_params);
+        response.set_ema_params(ema_params);
+        final_response.merge(response);
+        REQUIRE(final_response.queries("EMA").size() == 1);
+    }
+
+    SECTION("fail") {
+        ema::JsonResponse final_response;
+        client::EmaParams ema_params;
+        ema_params.set_timestamp("2020-10-14");
+        ema_params.set_stockticker("AAPL");
+        ema_params.set_adjusted(ema::Adjusted::TRUE);
+        ema_params.set_timespan(ema::Timespan::DAY);
+        ema_params.set_series_type(ema::SeriesType::CLOSE);
+        final_response.merge(client.get_ema(ema_params));
+        REQUIRE_THROWS(final_response.queries("EMA").size() == 1);
+    }
+}
+
+
+TEST_CASE("Testing PolygonIOManager SMA", "[sma]") {
+    config::PolygonIOConfig config;
+    client::PolygonIOClient client(config);
+
+    SECTION("short get sma 1") {
+        client::SmaParams sma_params;
+        sma_params.set_timestamp("2020-10-14");
+        sma_params.set_stockticker("AAPL");
+        sma_params.set_adjusted(sma::Adjusted::TRUE);
+        auto sma = client.get_sma(sma_params);
+        REQUIRE(sma.error_message.empty());
+        REQUIRE(sma.error_found == false);
+        REQUIRE(sma.count > 0);
+        REQUIRE(!sma.result.values.empty());
+    }
+
+    SECTION("short get sma 2") {
+        client::SmaParams sma_params;
+        sma_params.set_timestamp("2023-10-16");
+        sma_params.set_stockticker("A");
+        sma_params.set_adjusted(sma::Adjusted::FALSE);
+        auto sma = client.get_sma(sma_params);
+        REQUIRE(sma.error_message.empty());
+        REQUIRE(sma.error_found == false);
+        REQUIRE(sma.count > 0);
+        REQUIRE(!sma.result.values.empty());
+    }
+
+    SECTION("short get sma empty day") {
+        client::SmaParams sma_params;
+        sma_params.set_stockticker("NVO");
+        sma_params.set_timestamp("2023-10-14");
+        sma_params.set_adjusted(sma::Adjusted::FALSE);
+        auto sma = client.get_sma(sma_params);
+        REQUIRE(sma.error_found == true);
+        REQUIRE(!sma.error_message.empty());
+        REQUIRE(sma.count == 1);
+        REQUIRE(sma.result.values.empty());
+        REQUIRE(sma.queries("table").empty());
+    }
+}
+
+TEST_CASE("Testing Merge and queries SMA", "[sma]") {
+    config::PolygonIOConfig config;
+    client::PolygonIOClient client(config);
+
+    SECTION("valid") {
+        sma::JsonResponse final_response;
+        client::SmaParams sma_params;
+        sma_params.set_timestamp("2020-10-14");
+        sma_params.set_stockticker("AAPL");
+        sma_params.set_adjusted(sma::Adjusted::TRUE);
+        sma_params.set_timespan(sma::Timespan::DAY);
+        sma_params.set_series_type(sma::SeriesType::CLOSE);
+        auto response = client.get_sma(sma_params);
+        response.set_sma_params(sma_params);
+        final_response.merge(response);
+        REQUIRE(final_response.queries("SMA").size() == 1);
+    }
+
+    SECTION("fail") {
+        sma::JsonResponse final_response;
+        client::SmaParams sma_params;
+        sma_params.set_timestamp("2020-10-14");
+        sma_params.set_stockticker("AAPL");
+        sma_params.set_adjusted(sma::Adjusted::TRUE);
+        sma_params.set_timespan(sma::Timespan::DAY);
+        sma_params.set_series_type(sma::SeriesType::CLOSE);
+        final_response.merge(client.get_sma(sma_params));
+        REQUIRE_THROWS(final_response.queries("SMA").size() == 1);
+    }
 }
