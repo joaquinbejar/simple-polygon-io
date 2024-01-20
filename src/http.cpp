@@ -46,27 +46,38 @@ namespace simple_polygon_io::http {
     json HTTPClient::get_json(const PathParams &path_params) {
         json result = m_get_json(path_params);
 
-        auto next_url_it = result.find("next_url");
-        if (next_url_it != result.end()) {
-            std::string next_url = *next_url_it;
+        // Initialize 'results' as an array if not present
+        if (!result.contains("results")) {
+            result["results"] = json::array();
+        }
+
+        while (result.contains("next_url")) {
+            std::string next_url = result["next_url"];
             std::string cursor = m_get_cursor(next_url);
-            PathParams next_path_params = PathParams();
+            PathParams next_path_params;
             next_path_params.path = remove_host_and_port(remove_url_params(next_url));
             next_path_params.params["cursor"] = cursor;
-            json next_result = get_json(next_path_params);
+            json next_result = m_get_json(next_path_params);
 
-            if (!next_result.is_null() && next_result.find("results") != next_result.end()) {
+            if (next_result.contains("results") && next_result["results"].is_array()) {
                 result["results"].insert(result["results"].end(),
                                          next_result["results"].begin(),
                                          next_result["results"].end());
             }
+
+            // Update 'next_url' if present in 'next_result'
+            if (next_result.contains("next_url") && !next_result["next_url"].is_null() &&
+                !next_result["next_url"].empty()) {
+                result["next_url"] = next_result["next_url"];
+            } else {
+                result.erase("next_url");
+            }
         }
-        if (result.is_null())
-            return result;
-        result.erase("next_url");
-        result["count"] = result.contains("results") ? result.at("results").size() : 0;
+
+        result["count"] = result["results"].size();
         return result;
     }
+
 
     json HTTPClient::get_json_one_page(const PathParams &path_params) {
         json result = m_get_json(path_params);
@@ -152,7 +163,8 @@ namespace simple_polygon_io::http {
                 return json::parse(*httpData);
             } else {
                 logger->send<simple_logger::LogLevel::ERROR>(
-                        "ERROR HTTPClient::m_get_json http response code: " + std::to_string(httpCode) + " " + *httpData);
+                        "ERROR HTTPClient::m_get_json http response code: " + std::to_string(httpCode) + " " +
+                        *httpData);
             }
             return j;
         } catch (std::exception &e) {
