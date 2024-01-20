@@ -14,11 +14,7 @@
 
 namespace simple_polygon_io::tickers {
 
-    typedef std::string Query;
-    typedef std::vector<std::string> Queries;
-    typedef std::map<std::string, std::string> ParamsMap;
-
-    const std::string TICKERS_PATH = "/v3/reference/tickers";
+    using namespace simple_polygon_io::common;
 
     enum class Active {
         NONE = 0,

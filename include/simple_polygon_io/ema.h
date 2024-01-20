@@ -2,8 +2,8 @@
 // Created by Joaquin Bejar Garcia on 23/12/23.
 //
 
-#ifndef SIMPLE_POLYGON_IO_MACD_H
-#define SIMPLE_POLYGON_IO_MACD_H
+#ifndef SIMPLE_POLYGON_IO_EMA_H
+#define SIMPLE_POLYGON_IO_EMA_H
 
 #include <string>
 #include <map>
@@ -15,11 +15,11 @@
 #include <vector>
 #include <simple_polygon_io/ohlc.h>
 
-namespace simple_polygon_io::macd {
+namespace simple_polygon_io::ema {
 
     using namespace simple_polygon_io::common;
 
-    class MacdParams {
+    class EmaParams {
     private:
         //Query by timestamp. Either a date with the format YYYY-MM-DD or a millisecond timestamp.
         std::string m_timestamp;
@@ -124,7 +124,7 @@ namespace simple_polygon_io::macd {
 
         explicit Values(const json &j);
 
-        void set_macd_params(const MacdParams &macd_params);
+        void set_ema_params(const EmaParams &ema_params);
 
         json to_json() const;
 
@@ -164,20 +164,20 @@ namespace simple_polygon_io::macd {
 
         void merge(const JsonResponse &response);
 
-        void set_macd_params(const MacdParams &macd_params);
+        void set_ema_params(const EmaParams &ema_params);
 
         [[nodiscard]] Queries queries(const std::string &table) const override;
     };
 
-    MacdParams configure_params(MacdParams &params,
+    EmaParams configure_params(EmaParams &params,
                                 Timespan timespan,
                                 int short_window,
                                 int long_window,
                                 int signal_window,
                                 SeriesType series_type);
 
-    std::vector<MacdParams> get_all_kind_params(MacdParams &params);
+    std::vector<EmaParams> get_all_kind_params(EmaParams &params);
 
 }
 
-#endif //SIMPLE_POLYGON_IO_MACD_H
+#endif //SIMPLE_POLYGON_IO_EMA_H
