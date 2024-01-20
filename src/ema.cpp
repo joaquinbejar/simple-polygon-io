@@ -39,16 +39,8 @@ namespace simple_polygon_io::ema {
         m_adjusted = adjusted;
     }
 
-    void EmaParams::set_short_window(size_t short_window) {
-        m_short_window = short_window;
-    }
-
-    void EmaParams::set_long_window(size_t long_window) {
-        m_long_window = long_window;
-    }
-
-    void EmaParams::set_signal_window(size_t signal_window) {
-        m_signal_window = signal_window;
+    void EmaParams::set_window(size_t short_window) {
+        m_window = short_window;
     }
 
     void EmaParams::set_series_type(SeriesType series_type) {
@@ -67,64 +59,55 @@ namespace simple_polygon_io::ema {
         m_limit = limit;
     }
 
-    [[nodiscard]] const std::string &EmaParams::get_timestamp() const {
+    const std::string &EmaParams::get_timestamp() const {
         return m_timestamp;
     }
 
-    [[nodiscard]] const std::string &EmaParams::get_timestamp_gte() const {
+    const std::string &EmaParams::get_timestamp_gte() const {
         return m_timestamp_gte;
     }
 
-    [[nodiscard]] const std::string &EmaParams::get_timestamp_gt() const {
+    const std::string &EmaParams::get_timestamp_gt() const {
         return m_timestamp_gt;
     }
 
-    [[nodiscard]] const std::string &EmaParams::get_timestamp_lte() const {
+    const std::string &EmaParams::get_timestamp_lte() const {
         return m_timestamp_lte;
     }
 
-    [[nodiscard]] const std::string &EmaParams::get_timestamp_lt() const {
+    const std::string &EmaParams::get_timestamp_lt() const {
         return m_timestamp_lt;
     }
 
-    [[nodiscard]] const std::string &EmaParams::get_stockticker() const {
+    const std::string &EmaParams::get_stockticker() const {
         return m_stockticker;
     }
 
-
-    [[nodiscard]] Timespan EmaParams::get_timespan() const {
+    Timespan EmaParams::get_timespan() const {
         return m_timespan;
     }
 
-    [[nodiscard]] Adjusted EmaParams::get_adjusted() const {
+    Adjusted EmaParams::get_adjusted() const {
         return m_adjusted;
     }
 
-    [[nodiscard]] size_t EmaParams::get_short_window() const {
-        return m_short_window;
+    size_t EmaParams::get_window() const {
+        return m_window;
     }
 
-    [[nodiscard]] size_t EmaParams::get_long_window() const {
-        return m_long_window;
-    }
-
-    [[nodiscard]] size_t EmaParams::get_signal_window() const {
-        return m_signal_window;
-    }
-
-    [[nodiscard]] SeriesType EmaParams::get_series_type() const {
+    SeriesType EmaParams::get_series_type() const {
         return m_series_type;
     }
 
-    [[nodiscard]] ExpandUnderlying EmaParams::get_expand_underlying() const {
+    ExpandUnderlying EmaParams::get_expand_underlying() const {
         return m_expand_underlying;
     }
 
-    [[nodiscard]] Order EmaParams::get_order() const {
+    Order EmaParams::get_order() const {
         return m_order;
     }
 
-    [[nodiscard]] size_t EmaParams::get_limit() const {
+    size_t EmaParams::get_limit() const {
         return m_limit;
     }
 
@@ -139,9 +122,7 @@ namespace simple_polygon_io::ema {
         params["stockticker"] = m_stockticker;
         params["timespan"] = get_timespan_name(m_timespan);
         params["adjusted"] = get_adjusted_name(m_adjusted);
-        params["short_window"] = std::to_string(m_short_window);
-        params["long_window"] = std::to_string(m_long_window);
-        params["signal_window"] = std::to_string(m_signal_window);
+        params["window"] = std::to_string(m_window);
         params["series_type"] = get_series_type_name(m_series_type);
         params["expand_underlying"] = get_expand_underlying_name(m_expand_underlying);
         params["order"] = get_order_name(m_order);
@@ -170,9 +151,7 @@ namespace simple_polygon_io::ema {
 
     void Values::set_ema_params(const EmaParams &ema_params) {
         m_timespan = ema_params.get_timespan();
-        m_short_window = ema_params.get_short_window();
-        m_long_window = ema_params.get_long_window();
-        m_signal_window = ema_params.get_signal_window();
+        m_window = ema_params.get_window();
         m_series_type = ema_params.get_series_type();
         m_stockticker = ema_params.get_stockticker();
     }
@@ -185,9 +164,7 @@ namespace simple_polygon_io::ema {
         j["histogram"] = histogram;
         j["ticker"] = m_stockticker;
         j["timespan"] = get_timespan_name(m_timespan);
-        j["short_window"] = m_short_window;
-        j["long_window"] = m_long_window;
-        j["signal_window"] = m_signal_window;
+        j["window"] = m_window;
         j["series_type"] = get_series_type_name(m_series_type);
 
         return j;
@@ -213,9 +190,7 @@ namespace simple_polygon_io::ema {
               << "" << signal << ", "
               << "" << histogram << ", "
               << "'" << get_timespan_name(m_timespan) << "', "
-              << "" << m_short_window << ", "
-              << "" << m_long_window << ", "
-              << "" << m_signal_window << ", "
+              << "" << m_window << ", "
               << "'" << get_series_type_name(m_series_type) << "');";
         return Query(query.str());
     }
@@ -348,33 +323,27 @@ namespace simple_polygon_io::ema {
 
     EmaParams configure_params(EmaParams &params,
                                 Timespan timespan,
-                                int short_window,
-                                int long_window,
-                                int signal_window,
+                                int window,
                                 SeriesType series_type) {
         params.set_timespan(timespan);
-        params.set_short_window(short_window);
-        params.set_long_window(long_window);
-        params.set_signal_window(signal_window);
+        params.set_window(window);
         params.set_series_type(series_type);
         return params;
     }
 
     std::vector<EmaParams> get_all_kind_params(EmaParams &params) {
         std::vector<EmaParams> result_params;
-        std::vector<std::tuple<Timespan, int, int, int, SeriesType>> setups{
-                {Timespan::DAY,  16, 24, 10, SeriesType::CLOSE},
-                {Timespan::WEEK, 16, 24, 10, SeriesType::CLOSE},
-                {Timespan::WEEK, 12, 40, 9,  SeriesType::HIGH},
-                {Timespan::DAY,  12, 40, 9,  SeriesType::HIGH}
+        std::vector<std::tuple<Timespan, int, SeriesType>> setups{
+                {Timespan::DAY,  10, SeriesType::CLOSE},
+                {Timespan::WEEK, 10, SeriesType::CLOSE},
+                {Timespan::WEEK, 9,  SeriesType::HIGH},
+                {Timespan::DAY,  9,  SeriesType::HIGH}
         };
 
         for (auto setup: setups) {
             result_params.push_back(configure_params(params, std::get<0>(setup),
                                                      std::get<1>(setup),
-                                                     std::get<2>(setup),
-                                                     std::get<3>(setup),
-                                                     std::get<4>(setup)));
+                                                     std::get<2>(setup)));
         }
 
         return result_params;

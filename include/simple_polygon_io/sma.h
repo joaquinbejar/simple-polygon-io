@@ -30,14 +30,11 @@ namespace simple_polygon_io::sma {
         std::string m_stockticker;
         Timespan m_timespan = Timespan::NONE;
         Adjusted m_adjusted = Adjusted::NONE;
-        size_t m_short_window = 12;
-        size_t m_long_window = 26;
-        size_t m_signal_window = 9;
+        size_t m_window = 12;
         SeriesType m_series_type = SeriesType::NONE;
         ExpandUnderlying m_expand_underlying = ExpandUnderlying::NONE;
         Order m_order = Order::NONE;
         size_t m_limit = 1;
-
 
     public:
 
@@ -57,11 +54,7 @@ namespace simple_polygon_io::sma {
 
         void set_adjusted(Adjusted adjusted);
 
-        void set_short_window(size_t short_window);
-
-        void set_long_window(size_t long_window);
-
-        void set_signal_window(size_t signal_window);
+        void set_window(size_t window);
 
         void set_series_type(SeriesType series_type);
 
@@ -87,11 +80,7 @@ namespace simple_polygon_io::sma {
 
         [[nodiscard]] Adjusted get_adjusted() const;
 
-        [[nodiscard]] size_t get_short_window() const;
-
-        [[nodiscard]] size_t get_long_window() const;
-
-        [[nodiscard]] size_t get_signal_window() const;
+        [[nodiscard]] size_t get_window() const;
 
         [[nodiscard]] SeriesType get_series_type() const;
 
@@ -112,9 +101,7 @@ namespace simple_polygon_io::sma {
     private:
         std::string m_stockticker;
         Timespan m_timespan = Timespan::NONE;
-        size_t m_short_window = 12;
-        size_t m_long_window = 26;
-        size_t m_signal_window = 9;
+        size_t m_window = 12;
         SeriesType m_series_type = SeriesType::NONE;
     public:
         size_t timestamp;
@@ -171,7 +158,7 @@ namespace simple_polygon_io::sma {
 
     SmaParams configure_params(SmaParams &params,
                                 Timespan timespan,
-                                int short_window,
+                                int window,
                                 int long_window,
                                 int signal_window,
                                 SeriesType series_type);
