@@ -71,7 +71,6 @@ TEST_CASE("Http getjson ", "[Http]") {
         REQUIRE(j["status"] == "OK");
         REQUIRE(j["count"] > 2);
         REQUIRE(j["results"].size() > 2);
-        std::cout << j.dump(4) << std::endl;
     }
 
     SECTION("get STOCKS json from path") {
@@ -153,14 +152,12 @@ TEST_CASE("Http getjson macd", "[Http]") {
         params.set_order(Order::ASC);
         params.set_limit(10);
         ParamsMap params_map = params;
-        PathParams path_params = {MACD_PATH + params.get_stockticker(), (std::map<std::string, std::string>) params_map};
+        PathParams path_params = {MACD_PATH + params.get_stockticker(),
+                                  (std::map<std::string, std::string>) params_map};
         json j = http_client.get_json(path_params);
-        std::cout << j.dump(4) << std::endl;
         REQUIRE(j["status"] == "OK");
         REQUIRE(j["count"] > 10);
         REQUIRE(j["results"]["values"].size() > 10);
         REQUIRE(j["count"] == j["results"]["values"].size());
     }
-
-
 }
