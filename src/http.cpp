@@ -46,11 +46,6 @@ namespace simple_polygon_io::http {
     json HTTPClient::get_json(const PathParams &path_params) {
         json result = m_get_json(path_params);
 
-        // Initialize 'results' as an array if not present
-        if (!result.contains("results")) {
-            result["results"] = json::array();
-        }
-
         while (result.contains("next_url")) {
             std::string next_url = result["next_url"];
             std::string cursor = m_get_cursor(next_url);
@@ -59,24 +54,71 @@ namespace simple_polygon_io::http {
             next_path_params.params["cursor"] = cursor;
             json next_result = m_get_json(next_path_params);
 
-            if (next_result.contains("results") && next_result["results"].is_array()) {
-                result["results"].insert(result["results"].end(),
-                                         next_result["results"].begin(),
-                                         next_result["results"].end());
+            if (next_result.contains("results")) {
+                if (next_result["results"].is_array()) {
+                    // Handle array case
+                    if (!result.contains("results")) {
+                        result["results"] = json::array();
+                    }
+                    result["results"].insert(result["results"].end(),
+                                             next_result["results"].begin(),
+                                             next_result["results"].end());
+                } else if (next_result["results"].is_object()) {
+                    // Handle object case
+                    if (next_result["results"].contains("underlying") &&
+                        next_result["results"]["underlying"].contains("aggregates") &&
+                        next_result["results"]["underlying"]["aggregates"].is_array()) {
+
+                        if (!result["results"].contains("underlying") ||
+                            !result["results"]["underlying"].contains("aggregates")) {
+                            result["results"]["underlying"]["aggregates"] = json::array();
+                        }
+
+                        result["results"]["underlying"]["aggregates"].insert(
+                                result["results"]["underlying"]["aggregates"].end(),
+                                next_result["results"]["underlying"]["aggregates"].begin(),
+                                next_result["results"]["underlying"]["aggregates"].end());
+
+                    }
+                    if (next_result["results"].contains("values") &&
+                        next_result["results"]["values"].is_array()) {
+
+                        if (!result["results"].contains("values")) {
+                            result["results"]["values"] = json::array();
+                        }
+
+                        result["results"]["values"].insert(
+                                result["results"]["values"].end(),
+                                next_result["results"]["values"].begin(),
+                                next_result["results"]["values"].end());
+
+                    }
+
+                }
             }
 
-            // Update 'next_url' if present in 'next_result'
-            if (next_result.contains("next_url") && !next_result["next_url"].is_null() &&
-                !next_result["next_url"].empty()) {
+            if (next_result.contains("next_url")) {
                 result["next_url"] = next_result["next_url"];
             } else {
                 result.erase("next_url");
             }
         }
 
-        result["count"] = result["results"].size();
+        // Update 'count' based on the type of 'results'
+        if (result.contains("results")) {
+            if (result["results"].is_array()) {
+                result["count"] = result["results"].size();
+            } else if (result["results"].is_object()) {
+                if (result["results"].contains("values") &&
+                           result["results"]["values"].is_array()) {
+                    result["count"] = result["results"]["values"].size();
+                }
+            }
+        }
+
         return result;
     }
+
 
 
     json HTTPClient::get_json_one_page(const PathParams &path_params) {

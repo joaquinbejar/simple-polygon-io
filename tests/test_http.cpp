@@ -7,6 +7,7 @@
 #include "simple_polygon_io/http.h"
 #include "simple_polygon_io/config.h"
 #include "simple_polygon_io/tickers.h"
+#include "simple_polygon_io/macd.h"
 
 /*
  *  REQUERIMENTS
@@ -19,7 +20,8 @@ using simple_polygon_io::tickers::TickersParams;
 using simple_polygon_io::tickers::TICKERS_PATH;
 using simple_polygon_io::http::Url;
 using simple_polygon_io::http::PathParams;
-
+using simple_polygon_io::macd::MacdParams;
+using namespace simple_polygon_io::common;
 
 TEST_CASE("Testing remove_host_and_port function", "[HTTPClient]") {
     HTTPClient httpClient = HTTPClient(PolygonIOConfig());
@@ -54,7 +56,6 @@ TEST_CASE("Testing remove_host_and_port function", "[HTTPClient]") {
         REQUIRE(httpClient.remove_host_and_port(url) == "/ver3/test/path");
     }
 }
-
 
 TEST_CASE("Http getjson ", "[Http]") {
 
@@ -131,4 +132,35 @@ TEST_CASE("Check query syntax", "[Http]") {
         REQUIRE(j.find("request_id") != j.end());
 //        std::cout << j.dump(4) << std::endl;
     }
+}
+
+
+TEST_CASE("Http getjson macd", "[Http]") {
+
+    SECTION("get all json in one page from path") {
+        PolygonIOConfig config;
+        HTTPClient http_client = HTTPClient(config);
+        MacdParams params;
+        params.set_timestamp_gte("2023-11-24");
+        params.set_stockticker("AAPL");
+        params.set_timespan(Timespan::DAY);
+        params.set_adjusted(Adjusted::TRUE);
+        params.set_short_window(14);
+        params.set_long_window(40);
+        params.set_signal_window(10);
+        params.set_series_type(SeriesType::CLOSE);
+        params.set_expand_underlying(ExpandUnderlying::TRUE);
+        params.set_order(Order::ASC);
+        params.set_limit(10);
+        ParamsMap params_map = params;
+        PathParams path_params = {MACD_PATH + params.get_stockticker(), (std::map<std::string, std::string>) params_map};
+        json j = http_client.get_json(path_params);
+        std::cout << j.dump(4) << std::endl;
+        REQUIRE(j["status"] == "OK");
+        REQUIRE(j["count"] > 10);
+        REQUIRE(j["results"]["values"].size() > 10);
+        REQUIRE(j["count"] == j["results"]["values"].size());
+    }
+
+
 }
