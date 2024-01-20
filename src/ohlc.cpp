@@ -5,13 +5,6 @@
 #include <simple_polygon_io/ohlc.h>
 
 namespace simple_polygon_io::ohlc {
-    std::string get_adjusted_name(Adjusted adjusted) {
-        return AdjustedNames.at(adjusted);
-    }
-
-    Adjusted get_adjusted_from_string(const bool &adjusted) {
-        return adjusted ? Adjusted::TRUE : Adjusted::FALSE;
-    }
 
     std::string get_include_otc_name(IncludeOtc include_otc) {
         return IncludeOtcNames.at(include_otc);

@@ -14,27 +14,7 @@
 
 namespace simple_polygon_io::ohlc {
 
-    typedef std::string Query;
-    typedef std::vector<std::string> Queries;
-    typedef std::map<std::string, std::string> ParamsMap;
-
-    const std::string OHLC_PATH = "/v2/aggs/grouped/locale/us/market/stocks/";
-
-    enum class Adjusted {
-        NONE = 0,
-        TRUE = 1,
-        FALSE = 2
-    };
-
-    const std::map<Adjusted, std::string> AdjustedNames = {
-            {Adjusted::TRUE,  "true"},
-            {Adjusted::FALSE, "false"},
-            {Adjusted::NONE,  ""}
-    };
-
-    std::string get_adjusted_name(Adjusted adjusted);
-
-    Adjusted get_adjusted_from_string(const bool &adjusted);
+    using namespace simple_polygon_io::common;
 
     enum class IncludeOtc {
         NONE = 0,

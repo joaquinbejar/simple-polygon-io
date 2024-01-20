@@ -2,8 +2,8 @@
 // Created by Joaquin Bejar Garcia on 23/12/23.
 //
 
-#ifndef SIMPLE_POLYGON_IO_MACD_H
-#define SIMPLE_POLYGON_IO_MACD_H
+#ifndef SIMPLE_POLYGON_IO_EMA_H
+#define SIMPLE_POLYGON_IO_EMA_H
 
 #include <string>
 #include <map>
@@ -15,11 +15,11 @@
 #include <vector>
 #include <simple_polygon_io/ohlc.h>
 
-namespace simple_polygon_io::macd {
+namespace simple_polygon_io::ema {
 
     using namespace simple_polygon_io::common;
 
-    class MacdParams {
+    class EmaParams {
     private:
         //Query by timestamp. Either a date with the format YYYY-MM-DD or a millisecond timestamp.
         std::string m_timestamp;
@@ -30,9 +30,7 @@ namespace simple_polygon_io::macd {
         std::string m_stockticker;
         Timespan m_timespan = Timespan::NONE;
         Adjusted m_adjusted = Adjusted::NONE;
-        size_t m_short_window = 12;
-        size_t m_long_window = 26;
-        size_t m_signal_window = 9;
+        size_t m_window = 12;
         SeriesType m_series_type = SeriesType::NONE;
         ExpandUnderlying m_expand_underlying = ExpandUnderlying::NONE;
         Order m_order = Order::NONE;
@@ -57,11 +55,7 @@ namespace simple_polygon_io::macd {
 
         void set_adjusted(Adjusted adjusted);
 
-        void set_short_window(size_t short_window);
-
-        void set_long_window(size_t long_window);
-
-        void set_signal_window(size_t signal_window);
+        void set_window(size_t short_window);
 
         void set_series_type(SeriesType series_type);
 
@@ -87,11 +81,7 @@ namespace simple_polygon_io::macd {
 
         [[nodiscard]] Adjusted get_adjusted() const;
 
-        [[nodiscard]] size_t get_short_window() const;
-
-        [[nodiscard]] size_t get_long_window() const;
-
-        [[nodiscard]] size_t get_signal_window() const;
+        [[nodiscard]] size_t get_window() const;
 
         [[nodiscard]] SeriesType get_series_type() const;
 
@@ -112,19 +102,15 @@ namespace simple_polygon_io::macd {
     private:
         std::string m_stockticker;
         Timespan m_timespan = Timespan::NONE;
-        size_t m_short_window = 12;
-        size_t m_long_window = 26;
-        size_t m_signal_window = 9;
+        size_t m_window = 12;
         SeriesType m_series_type = SeriesType::NONE;
     public:
         size_t timestamp;
         double value;
-        double signal;
-        double histogram;
 
         explicit Values(const json &j);
 
-        void set_macd_params(const MacdParams &macd_params);
+        void set_ema_params(const EmaParams &ema_params);
 
         json to_json() const;
 
@@ -164,20 +150,18 @@ namespace simple_polygon_io::macd {
 
         void merge(const JsonResponse &response);
 
-        void set_macd_params(const MacdParams &macd_params);
+        void set_ema_params(const EmaParams &ema_params);
 
         [[nodiscard]] Queries queries(const std::string &table) const override;
     };
 
-    MacdParams configure_params(MacdParams &params,
+    EmaParams configure_params(EmaParams &params,
                                 Timespan timespan,
-                                int short_window,
-                                int long_window,
-                                int signal_window,
+                                int window,
                                 SeriesType series_type);
 
-    std::vector<MacdParams> get_all_kind_params(MacdParams &params);
+    std::vector<EmaParams> get_all_kind_params(EmaParams &params);
 
 }
 
-#endif //SIMPLE_POLYGON_IO_MACD_H
+#endif //SIMPLE_POLYGON_IO_EMA_H

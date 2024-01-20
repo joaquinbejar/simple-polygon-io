@@ -22,6 +22,9 @@ set(SIMPLE_POLYGON_IO_SOURCE_FILES
         include/simple_polygon_io/http.h
         include/simple_polygon_io/ohlc.h
         include/simple_polygon_io/macd.h
+        include/simple_polygon_io/sma.h
+        include/simple_polygon_io/ema.h
+        src/common.cpp
         src/config.cpp
         src/client.cpp
         src/exceptions.cpp
@@ -29,6 +32,8 @@ set(SIMPLE_POLYGON_IO_SOURCE_FILES
         src/http.cpp
         src/ohlc.cpp
         src/macd.cpp
+        src/sma.cpp
+        src/ema.cpp
 )
 
 add_library(simple_polygon_io STATIC ${SIMPLE_POLYGON_IO_SOURCE_FILES})
