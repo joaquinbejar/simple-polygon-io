@@ -7,6 +7,7 @@
 
 #include <string>
 #include <map>
+#include <vector>
 
 namespace simple_polygon_io::common {
 
