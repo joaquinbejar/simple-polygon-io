@@ -41,8 +41,6 @@ TEST_CASE("Operator std::map ", "[macd]") {
     }
 }
 
-
-
 TEST_CASE("empty json", "[ohlc]") {
     SECTION("With ticker name") {
         json j;
