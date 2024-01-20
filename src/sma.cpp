@@ -328,10 +328,22 @@ namespace simple_polygon_io::sma {
     std::vector<SmaParams> get_all_kind_params(SmaParams &params) {
         std::vector<SmaParams> result_params;
         std::vector<std::tuple<Timespan, int, SeriesType>> setups{
-                {Timespan::DAY,  10, SeriesType::CLOSE},
-                {Timespan::WEEK, 10, SeriesType::CLOSE},
-                {Timespan::WEEK, 9,  SeriesType::HIGH},
-                {Timespan::DAY,  9,  SeriesType::HIGH}
+                {Timespan::DAY,  30, SeriesType::CLOSE},
+                {Timespan::WEEK, 30, SeriesType::CLOSE},
+                {Timespan::WEEK, 30,  SeriesType::HIGH},
+                {Timespan::DAY,  30,  SeriesType::HIGH},
+                {Timespan::DAY,  90, SeriesType::CLOSE},
+                {Timespan::WEEK, 90, SeriesType::CLOSE},
+                {Timespan::WEEK, 90,  SeriesType::HIGH},
+                {Timespan::DAY,  90,  SeriesType::HIGH},
+                {Timespan::DAY,  210, SeriesType::CLOSE},
+                {Timespan::WEEK, 210, SeriesType::CLOSE},
+                {Timespan::WEEK, 210,  SeriesType::HIGH},
+                {Timespan::DAY,  210,  SeriesType::HIGH},
+                {Timespan::DAY,  630, SeriesType::CLOSE},
+                {Timespan::WEEK, 630, SeriesType::CLOSE},
+                {Timespan::WEEK, 630,  SeriesType::HIGH},
+                {Timespan::DAY,  630,  SeriesType::HIGH},
         };
 
         result_params.reserve(setups.size());
