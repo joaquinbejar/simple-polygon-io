@@ -142,8 +142,6 @@ namespace simple_polygon_io::ema {
         try {
             j.at("timestamp").get_to(timestamp);
             j.at("value").get_to(value);
-            j.at("signal").get_to(signal);
-            j.at("histogram").get_to(histogram);
         } catch (std::exception &e) {
             throw std::runtime_error("Error parsing simple_polygon_io::ema::Values: " + std::string(e.what()));
         }
@@ -160,8 +158,6 @@ namespace simple_polygon_io::ema {
         json j;
         j["timestamp"] = timestamp;
         j["value"] = value;
-        j["signal"] = signal;
-        j["histogram"] = histogram;
         j["ticker"] = m_stockticker;
         j["timespan"] = get_timespan_name(m_timespan);
         j["window"] = m_window;
@@ -182,13 +178,10 @@ namespace simple_polygon_io::ema {
         }
         std::stringstream query;
         query << "REPLACE INTO `" + table +
-                 "` (`ticker`, `timestamp`, `value`, `signal`, `histogram`, `timespan`, `short_window`, `long_window`, "
-                 "`signal_window`, `series_type`) VALUES ("
+                 "` (`ticker`, `timestamp`, `value`, `timespan`, `window`, `series_type`) VALUES ("
               << "'" << m_stockticker << "', "
               << "" << timestamp << ", "
               << "" << value << ", "
-              << "" << signal << ", "
-              << "" << histogram << ", "
               << "'" << get_timespan_name(m_timespan) << "', "
               << "" << m_window << ", "
               << "'" << get_series_type_name(m_series_type) << "');";

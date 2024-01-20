@@ -106,8 +106,6 @@ namespace simple_polygon_io::sma {
     public:
         size_t timestamp;
         double value;
-        double signal;
-        double histogram;
 
         explicit Values(const json &j);
 
@@ -159,8 +157,6 @@ namespace simple_polygon_io::sma {
     SmaParams configure_params(SmaParams &params,
                                 Timespan timespan,
                                 int window,
-                                int long_window,
-                                int signal_window,
                                 SeriesType series_type);
 
     std::vector<SmaParams> get_all_kind_params(SmaParams &params);

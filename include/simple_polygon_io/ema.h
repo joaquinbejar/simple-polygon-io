@@ -107,8 +107,6 @@ namespace simple_polygon_io::ema {
     public:
         size_t timestamp;
         double value;
-        double signal;
-        double histogram;
 
         explicit Values(const json &j);
 
@@ -159,9 +157,7 @@ namespace simple_polygon_io::ema {
 
     EmaParams configure_params(EmaParams &params,
                                 Timespan timespan,
-                                int short_window,
-                                int long_window,
-                                int signal_window,
+                                int window,
                                 SeriesType series_type);
 
     std::vector<EmaParams> get_all_kind_params(EmaParams &params);
