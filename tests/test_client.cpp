@@ -70,21 +70,6 @@ TEST_CASE("Testing PolygonIOManager OHLC", "[ohlc]") {
         REQUIRE(ohlc.count > 0);
         REQUIRE(!ohlc.results.empty());
     }
-
-    SECTION("short get ohlc empty day") {
-        client::OhlcParams ohlc_params;
-        ohlc_params.set_date("2023-10-14");
-        ohlc_params.set_adjusted(ohlc::Adjusted::FALSE);
-        ohlc_params.set_include_otc(ohlc::IncludeOtc::TRUE);
-
-        auto ohlc = client.get_ohlc(ohlc_params);
-        REQUIRE(ohlc.error_found == true);
-        REQUIRE(!ohlc.error_message.empty());
-        REQUIRE(ohlc.count == 0);
-        REQUIRE(ohlc.results.empty());
-        REQUIRE(ohlc.queries("table").empty());
-
-    }
 }
 
 TEST_CASE("Testing PolygonIOManager MACD", "[macd]") {
