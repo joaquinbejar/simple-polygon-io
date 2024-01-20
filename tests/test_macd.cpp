@@ -2068,7 +2068,4 @@ TEST_CASE("Merge JsonResponse with error", "[macd]") {
         queries.push_back(query);
     }
     response1.merge(response2);
-    for (auto &query: queries) {
-        std::cout << query << std::endl;
-    }
 }
