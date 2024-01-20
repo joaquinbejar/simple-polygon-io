@@ -115,10 +115,10 @@ namespace simple_polygon_io::ema {
     EmaParams::operator ParamsMap() const {
         ParamsMap params;
         params["timestamp"] = m_timestamp;
-        params["timestamp_gte"] = m_timestamp_gte;
-        params["timestamp_gt"] = m_timestamp_gt;
-        params["timestamp_lte"] = m_timestamp_lte;
-        params["timestamp_lt"] = m_timestamp_lt;
+        params["timestamp.gte"] = m_timestamp_gte;
+        params["timestamp.gt"] = m_timestamp_gt;
+        params["timestamp.lte"] = m_timestamp_lte;
+        params["timestamp.lt"] = m_timestamp_lt;
         params["stockticker"] = m_stockticker;
         params["timespan"] = get_timespan_name(m_timespan);
         params["adjusted"] = get_adjusted_name(m_adjusted);
@@ -315,9 +315,9 @@ namespace simple_polygon_io::ema {
     }
 
     EmaParams configure_params(EmaParams &params,
-                                Timespan timespan,
-                                int window,
-                                SeriesType series_type) {
+                               Timespan timespan,
+                               int window,
+                               SeriesType series_type) {
         params.set_timespan(timespan);
         params.set_window(window);
         params.set_series_type(series_type);
@@ -327,24 +327,25 @@ namespace simple_polygon_io::ema {
     std::vector<EmaParams> get_all_kind_params(EmaParams &params) {
         std::vector<EmaParams> result_params;
         std::vector<std::tuple<Timespan, int, SeriesType>> setups{
-                {Timespan::DAY,  30, SeriesType::CLOSE},
-                {Timespan::WEEK, 30, SeriesType::CLOSE},
+                {Timespan::DAY,  30,  SeriesType::CLOSE},
+                {Timespan::WEEK, 30,  SeriesType::CLOSE},
                 {Timespan::WEEK, 30,  SeriesType::HIGH},
                 {Timespan::DAY,  30,  SeriesType::HIGH},
-                {Timespan::DAY,  90, SeriesType::CLOSE},
-                {Timespan::WEEK, 90, SeriesType::CLOSE},
+                {Timespan::DAY,  90,  SeriesType::CLOSE},
+                {Timespan::WEEK, 90,  SeriesType::CLOSE},
                 {Timespan::WEEK, 90,  SeriesType::HIGH},
                 {Timespan::DAY,  90,  SeriesType::HIGH},
                 {Timespan::DAY,  210, SeriesType::CLOSE},
                 {Timespan::WEEK, 210, SeriesType::CLOSE},
-                {Timespan::WEEK, 210,  SeriesType::HIGH},
-                {Timespan::DAY,  210,  SeriesType::HIGH},
+                {Timespan::WEEK, 210, SeriesType::HIGH},
+                {Timespan::DAY,  210, SeriesType::HIGH},
                 {Timespan::DAY,  630, SeriesType::CLOSE},
                 {Timespan::WEEK, 630, SeriesType::CLOSE},
-                {Timespan::WEEK, 630,  SeriesType::HIGH},
-                {Timespan::DAY,  630,  SeriesType::HIGH},
+                {Timespan::WEEK, 630, SeriesType::HIGH},
+                {Timespan::DAY,  630, SeriesType::HIGH},
         };
 
+        result_params.reserve(setups.size());
         for (auto setup: setups) {
             result_params.push_back(configure_params(params,
                                                      std::get<0>(setup),

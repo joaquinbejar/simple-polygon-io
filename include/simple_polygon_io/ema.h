@@ -156,9 +156,9 @@ namespace simple_polygon_io::ema {
     };
 
     EmaParams configure_params(EmaParams &params,
-                                Timespan timespan,
-                                int window,
-                                SeriesType series_type);
+                               Timespan timespan,
+                               int window,
+                               SeriesType series_type);
 
     std::vector<EmaParams> get_all_kind_params(EmaParams &params);
 
