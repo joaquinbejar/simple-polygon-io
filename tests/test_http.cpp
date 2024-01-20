@@ -129,10 +129,8 @@ TEST_CASE("Check query syntax", "[Http]") {
         REQUIRE(j["status"] == "OK");
         REQUIRE(j["count"] == j["results"].size());
         REQUIRE(j.find("request_id") != j.end());
-//        std::cout << j.dump(4) << std::endl;
     }
 }
-
 
 TEST_CASE("Http getjson macd", "[Http]") {
 
