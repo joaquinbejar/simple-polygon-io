@@ -8,6 +8,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
+
 
 namespace simple_polygon_io::common {
 
