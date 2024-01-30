@@ -39,7 +39,6 @@ queries_t instructor_executor_context(const Instructions<MetaInstruction> &instr
     switch (instruction.type) {
         case Type::TICKER: {
             auto params = simple_polygon_io::tickers::TickersParams();
-
             switch (instruction.selector) {
                 case Selector::ALL: {
                     params.set_market(simple_polygon_io::tickers::Market::STOCKS);
