@@ -7,6 +7,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH})
 
 include(cmake/simple_logger.cmake)
 include(cmake/curl.cmake)
+include(cmake/trading_common.cmake)
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     add_compile_definitions(NDEBUG)
@@ -24,6 +25,7 @@ set(SIMPLE_POLYGON_IO_SOURCE_FILES
         include/simple_polygon_io/macd.h
         include/simple_polygon_io/sma.h
         include/simple_polygon_io/ema.h
+        include/simple_polygon_io/instruction_executrion.h
         src/common.cpp
         src/config.cpp
         src/client.cpp
@@ -34,6 +36,7 @@ set(SIMPLE_POLYGON_IO_SOURCE_FILES
         src/macd.cpp
         src/sma.cpp
         src/ema.cpp
+        src/instruction_executrion.cpp
 )
 
 add_library(simple_polygon_io STATIC ${SIMPLE_POLYGON_IO_SOURCE_FILES})
@@ -54,6 +57,7 @@ target_include_directories(simple_polygon_io PUBLIC
         ${NLOHMANN_JSON_INCLUDE}
         ${COMMON_INCLUDE}
         ${CURL_INCLUDE}
+        ${TRADING_COMMON_INCLUDE}
 )
 
 target_link_libraries(simple_polygon_io
