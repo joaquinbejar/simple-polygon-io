@@ -80,7 +80,6 @@ namespace simple_polygon_io::instructor {
                 }
             }
             case Type::OHLC: {
-
                 switch (instruction.selector) {
                     case Selector::ALL: {
                         auto params = ohlc::OhlcParams();
@@ -160,7 +159,6 @@ namespace simple_polygon_io::instructor {
                         return final_response.queries(instruction.other.table);
                     }
                     case Selector::ONE: {
-                        // use MACD to get one ohlc
                         if (!instruction.tickers.empty()) {
                             params.set_stockticker(instruction.tickers[0]);
                             macd::JsonResponse final_response;
