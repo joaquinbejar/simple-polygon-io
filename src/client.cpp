@@ -15,7 +15,7 @@ namespace simple_polygon_io::client {
     }
 
 
-    simple_polygon_io::tickers::JsonResponse PolygonIOClient::get_tickers(const TickersParams &params) const {
+    tickers::JsonResponse PolygonIOClient::get_tickers(const TickersParams &params) const {
         try {
             HTTPClient http_client = HTTPClient(m_config);
             PathParams path_params = {TICKERS_PATH, params};
@@ -28,7 +28,7 @@ namespace simple_polygon_io::client {
         }
     }
 
-    simple_polygon_io::ohlc::JsonResponse PolygonIOClient::get_ohlc(const OhlcParams &params) const {
+    ohlc::JsonResponse PolygonIOClient::get_ohlc(const OhlcParams &params) const {
         try {
             HTTPClient http_client = HTTPClient(m_config);
             std::string url = OHLC_PATH + params.get_date();
@@ -42,7 +42,7 @@ namespace simple_polygon_io::client {
         }
     }
 
-    simple_polygon_io::macd::JsonResponse PolygonIOClient::get_macd(const MacdParams &params) const {
+    macd::JsonResponse PolygonIOClient::get_macd(const MacdParams &params) const {
         try {
             HTTPClient http_client = HTTPClient(m_config);
             std::string url = MACD_PATH + params.get_stockticker();
@@ -56,7 +56,7 @@ namespace simple_polygon_io::client {
         }
     }
 
-    simple_polygon_io::ema::JsonResponse PolygonIOClient::get_ema(const EmaParams &params) const {
+    ema::JsonResponse PolygonIOClient::get_ema(const EmaParams &params) const {
         try {
             HTTPClient http_client = HTTPClient(m_config);
             std::string url = EMA_PATH + params.get_stockticker();
@@ -70,7 +70,7 @@ namespace simple_polygon_io::client {
         }
     }
 
-    simple_polygon_io::sma::JsonResponse PolygonIOClient::get_sma(const SmaParams &params) const {
+    sma::JsonResponse PolygonIOClient::get_sma(const SmaParams &params) const {
         try {
             HTTPClient http_client = HTTPClient(m_config);
             std::string url = SMA_PATH + params.get_stockticker();
@@ -87,8 +87,8 @@ namespace simple_polygon_io::client {
     TickersNames get_tickers_names(PolygonIOClient &client, config::PolygonIOConfig &config, size_t limit) {
         try {
             config.logger->send<simple_logger::LogLevel::NOTICE>("Getting tickers");
-            auto params = simple_polygon_io::tickers::TickersParams(); // Define params closer to usage
-            params.set_market(simple_polygon_io::tickers::Market::STOCKS);
+            auto params = tickers::TickersParams(); // Define params closer to usage
+            params.set_market(tickers::Market::STOCKS);
             auto tickers_response = client.get_tickers(params);
             TickersNames tickers;
             for (const auto &result: tickers_response.results) {
@@ -104,6 +104,21 @@ namespace simple_polygon_io::client {
         } catch (std::exception &e) {
             config.logger->send<simple_logger::LogLevel::ERROR>("Error getting tickers: " + std::string(e.what()));
             return {};
+        }
+    }
+
+    aggregates::JsonResponse PolygonIOClient::get_aggregates(const AggregatesParams &params) const {
+        try {
+            HTTPClient http_client = HTTPClient(m_config);
+            std::string url = AGGREGATES_PATH + params.get_stockticker() + "/range/" + std::to_string(params.get_multiplier()) + "/"
+                                + get_timespan_name(params.get_timespan()) + "/" + params.get_from() + "/" + params.get_to();
+
+            PathParams path_params = {url, params};
+            json j = http_client.get_json(path_params);
+            return aggregates::JsonResponse(j);
+        } catch (std::exception &e) {
+            m_config.logger->send<simple_logger::LogLevel::ERROR>("Error getting aggregates: " + std::string(e.what()));
+            throw e;
         }
     }
 }

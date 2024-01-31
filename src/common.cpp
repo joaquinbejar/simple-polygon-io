@@ -52,4 +52,68 @@ namespace simple_polygon_io::common {
         return (it != OrderNames.end()) ? it->first : Order::NONE;
     }
 
+    std::string get_include_otc_name(IncludeOtc include_otc) {
+        return IncludeOtcNames.at(include_otc);
+    }
+
+    IncludeOtc get_include_otc_from_string(const bool &include_otc) {
+        return include_otc ? IncludeOtc::TRUE : IncludeOtc::FALSE;
+    }
+
+    std::string get_active_name(Active active) {
+        return ActiveNames.at(active);
+    }
+
+    Active get_active_from_string(const bool &active) {
+        return active ? Active::TRUE : Active::FALSE;
+    }
+
+    std::string get_order_by_name(OrderBy order_by) {
+        return OrderByNames.at(order_by);
+    }
+
+    std::string get_ticker_sort_by_name(TickerSortBy sort_by) {
+        return TickerSortByNames.at(sort_by);
+    }
+
+    std::string get_ticker_type_name(TickerType type) {
+        return TickerTypeNames.at(type);
+    }
+
+    TickerType get_ticker_type_from_string(const std::string &type) {
+        for (const auto &[key, value]: TickerTypeNames) {
+            if (value == type) {
+                return key;
+            }
+        }
+        return TickerType::NONE;
+    }
+
+    std::string get_market_name(Market market) {
+        return MarketNames.at(market);
+    }
+
+    Market get_market_from_string(const std::string &market) {
+        for (const auto &[key, value]: MarketNames) {
+            if (value == market) {
+                return key;
+            }
+        }
+        return Market::NONE;
+    }
+
+    std::string get_exchange_name(Exchange exchange) {
+        return ExchangeNames.at(exchange);
+    }
+
+    Exchange get_exchange_from_string(const std::string &exchange) {
+        for (const auto &[key, value]: ExchangeNames) {
+            if (value == exchange) {
+                return key;
+            }
+        }
+        return Exchange::NONE;
+    }
+
+
 }

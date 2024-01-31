@@ -1,9 +1,9 @@
 //
-// Created by Joaquin Bejar Garcia on 23/12/23.
+// Created by Joaquin Bejar Garcia on 31/1/24.
 //
 
-#ifndef SIMPLE_POLYGON_IO_OHLC_H
-#define SIMPLE_POLYGON_IO_OHLC_H
+#ifndef SIMPLE_POLYGON_IO_AGGREGATES_H
+#define SIMPLE_POLYGON_IO_AGGREGATES_H
 
 #include <string>
 #include <map>
@@ -12,15 +12,20 @@
 #include <common/sql_utils.h>
 #include <simple_polygon_io/common.h>
 
-namespace simple_polygon_io::ohlc {
+namespace simple_polygon_io::aggregates {
 
     using namespace simple_polygon_io::common;
 
-    class OhlcParams {
+    class AggregatesParams {
     private:
-        std::string m_date = ::common::dates::get_current_date();
         Adjusted m_adjusted = Adjusted::NONE;
-        IncludeOtc m_include_otc = IncludeOtc::NONE;
+        std::string m_stockticker;
+        size_t m_multiplier = 1;
+        std::string m_from = ::common::dates::get_current_date();
+        std::string m_to = ::common::dates::get_current_date();
+        Order m_sort = Order::NONE;
+        Timespan m_timespan = Timespan::NONE;
+
 
     public:
         bool use_current_date = false;
@@ -33,29 +38,48 @@ namespace simple_polygon_io::ohlc {
 
         [[nodiscard]] const Adjusted &get_adjusted() const;
 
-        void set_include_otc(const IncludeOtc &include_otc);
+        void set_stockticker(const std::string &stockticker);
 
-        [[nodiscard]] const IncludeOtc &get_include_otc() const;
+        [[nodiscard]] const std::string &get_stockticker() const;
+
+        void set_multiplier(size_t multiplier);
+
+        [[nodiscard]] size_t get_multiplier() const;
+
+        void set_from(const std::string &from);
+
+        [[nodiscard]] const std::string &get_from() const;
+
+        void set_to(const std::string &to);
+
+        [[nodiscard]] const std::string &get_to() const;
+
+        void set_sort(Order sort);
+
+        [[nodiscard]] Order get_sort() const;
+
+        void set_timespan (Timespan timespan);
+
+        [[nodiscard]] Timespan get_timespan() const;
+
 
         // NOLINTNEXTLINE(clang-diagnostic-xxx, clang-analyzer-xxx)
         operator ParamsMap() const;
-
 
     };
 
     struct Result {
         /*
-         *     {
-      "T": "VSAT",
-      "c": 34.24,
-      "h": 35.47,
-      "l": 34.21,
-      "n": 4966,
-      "o": 34.9,
-      "t": 1602705600000,
-      "v": 312583,
-      "vw": 34.4736
-    }
+        {
+            "v": 70790813,
+            "vw": 131.6292,
+            "o": 130.465,
+            "c": 130.15,
+            "h": 133.41,
+            "l": 129.89,
+            "t": 1673240400000,
+            "n": 645365
+        }
          */
         std::string T;
         double c = 0;
@@ -66,8 +90,6 @@ namespace simple_polygon_io::ohlc {
         size_t t = 0;
         size_t v = 0;
         double vw = 0;
-        bool otc = false;
-
 
         explicit Result(const json &j);
 
@@ -75,6 +97,7 @@ namespace simple_polygon_io::ohlc {
     };
 
     struct JsonResponse : simple_polygon_io::common::BaseJsonResponse {
+        std::string ticker;
         Adjusted adjusted;
         size_t queryCount{};
         size_t resultsCount{};
@@ -95,4 +118,4 @@ namespace simple_polygon_io::ohlc {
     };
 }
 
-#endif //SIMPLE_POLYGON_IO_OHLC_H
+#endif //SIMPLE_POLYGON_IO_AGGREGATES_H

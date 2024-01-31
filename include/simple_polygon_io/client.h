@@ -11,28 +11,23 @@
 #include <simple_polygon_io/macd.h>
 #include <simple_polygon_io/ema.h>
 #include <simple_polygon_io/sma.h>
+#include <simple_polygon_io/aggregates.h>
 #include <simple_polygon_io/exceptions.h>
-#include "simple_polygon_io/http.h"
+#include <simple_polygon_io/http.h>
+
 
 namespace simple_polygon_io::client {
 
-    using simple_polygon_io::http::HTTPClient;
-    using simple_polygon_io::http::PathParams;
-
-    using simple_polygon_io::tickers::TickersParams;
-    using simple_polygon_io::common::TICKERS_PATH;
-
-    using simple_polygon_io::common::OHLC_PATH;
-    using simple_polygon_io::ohlc::OhlcParams;
-
-    using simple_polygon_io::common::MACD_PATH;
-    using simple_polygon_io::macd::MacdParams;
-
-    using simple_polygon_io::common::EMA_PATH;
-    using simple_polygon_io::ema::EmaParams;
-
-    using simple_polygon_io::common::SMA_PATH;
-    using simple_polygon_io::sma::SmaParams;
+    using namespace simple_polygon_io;
+    using namespace common;
+    using http::HTTPClient;
+    using http::PathParams;
+    using tickers::TickersParams;
+    using ohlc::OhlcParams;
+    using macd::MacdParams;
+    using ema::EmaParams;
+    using sma::SmaParams;
+    using aggregates::AggregatesParams;
 
     typedef std::vector<std::string> TickersNames;
 
@@ -51,18 +46,20 @@ namespace simple_polygon_io::client {
 
         ~PolygonIOClient() = default;
 
-        [[nodiscard]] simple_polygon_io::tickers::JsonResponse get_tickers(const TickersParams &params) const;
+        [[nodiscard]] tickers::JsonResponse get_tickers(const TickersParams &params) const;
 
-        [[nodiscard]] simple_polygon_io::ohlc::JsonResponse get_ohlc(const OhlcParams &params) const;
+        [[nodiscard]] ohlc::JsonResponse get_ohlc(const OhlcParams &params) const;
 
-        [[nodiscard]] simple_polygon_io::macd::JsonResponse get_macd(const MacdParams &params) const;
+        [[nodiscard]] macd::JsonResponse get_macd(const MacdParams &params) const;
 
-        [[nodiscard]] simple_polygon_io::ema::JsonResponse get_ema(const EmaParams &params) const;
+        [[nodiscard]] ema::JsonResponse get_ema(const EmaParams &params) const;
 
-        [[nodiscard]] simple_polygon_io::sma::JsonResponse get_sma(const SmaParams &params) const;
+        [[nodiscard]] sma::JsonResponse get_sma(const SmaParams &params) const;
+
+        [[nodiscard]] aggregates::JsonResponse get_aggregates(const AggregatesParams &params) const;
 
     private:
-        simple_polygon_io::config::PolygonIOConfig &m_config;
+        config::PolygonIOConfig &m_config;
     };
 
     TickersNames get_tickers_names(PolygonIOClient &client, config::PolygonIOConfig &config, size_t limit = 0);
