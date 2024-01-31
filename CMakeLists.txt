@@ -25,7 +25,7 @@ set(SIMPLE_POLYGON_IO_SOURCE_FILES
         include/simple_polygon_io/macd.h
         include/simple_polygon_io/sma.h
         include/simple_polygon_io/ema.h
-        include/simple_polygon_io/instruction_executrion.h
+        include/simple_polygon_io/instruction_execution.h
         include/simple_polygon_io/aggregates.h
         src/common.cpp
         src/config.cpp
@@ -37,7 +37,7 @@ set(SIMPLE_POLYGON_IO_SOURCE_FILES
         src/macd.cpp
         src/sma.cpp
         src/ema.cpp
-        src/instruction_executrion.cpp
+        src/instruction_execution.cpp
         src/aggregates.cpp
 )
 

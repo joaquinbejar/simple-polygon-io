@@ -4,7 +4,7 @@
 
 #include <trading_common/instructions.h>
 #include <catch2/catch_test_macros.hpp>
-#include <simple_polygon_io/instruction_executrion.h>
+#include <simple_polygon_io/instruction_execution.h>
 
 using namespace simple_polygon_io::instructor;
 

@@ -2,7 +2,7 @@
 // Created by Joaquin Bejar Garcia on 30/1/24.
 //
 
-#include <simple_polygon_io/instruction_executrion.h>
+#include <simple_polygon_io/instruction_execution.h>
 
 namespace simple_polygon_io::instructor {
 
