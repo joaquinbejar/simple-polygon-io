@@ -47,7 +47,6 @@ namespace simple_polygon_io::instructor {
         config::PolygonIOConfig config;
         client::PolygonIOClient polygon_client(config);
 
-
         switch (instruction.type) {
             case Type::TICKER: {
                 auto params = tickers::TickersParams();
@@ -100,6 +99,11 @@ namespace simple_polygon_io::instructor {
                         auto params = macd::MacdParams();
                         params.set_adjusted(macd::Adjusted::TRUE);
                         params.set_expand_underlying(macd::ExpandUnderlying::TRUE);
+                        params.set_timespan(macd::Timespan::DAY);
+                        params.set_series_type(macd::SeriesType::CLOSE);
+                        params.set_long_window(2);
+                        params.set_short_window(1);
+                        params.set_signal_window(1);
 
                         if (instruction.other.date.empty()) {
                             params.set_timestamp(::common::dates::get_current_date());
@@ -110,9 +114,16 @@ namespace simple_polygon_io::instructor {
                         // use MACD to get one ohlc
                         if (!instruction.tickers.empty()) {
                             params.set_stockticker(instruction.tickers[0]);
+
                             macd::JsonResponse response = polygon_client.get_macd(params);
                             response.set_macd_params(params);
-                            return response.queries(instruction.other.table);
+
+                            auto queries =  response.queries("DISCARD");
+                            // remove DISCARD queries
+                            queries.erase(std::remove_if(queries.begin(), queries.end(), [](const std::string &query) {
+                                return query.find("DISCARD") != std::string::npos;
+                            }), queries.end());
+                            return queries;
                         } else {
                             return {};
                         }
@@ -121,6 +132,11 @@ namespace simple_polygon_io::instructor {
                         auto params = macd::MacdParams();
                         params.set_adjusted(macd::Adjusted::TRUE);
                         params.set_expand_underlying(macd::ExpandUnderlying::TRUE);
+                        params.set_timespan(macd::Timespan::DAY);
+                        params.set_series_type(macd::SeriesType::CLOSE);
+                        params.set_long_window(2);
+                        params.set_short_window(1);
+                        params.set_signal_window(1);
 
                         if (instruction.other.date.empty()) {
                             params.set_timestamp(::common::dates::get_current_date());
@@ -135,7 +151,13 @@ namespace simple_polygon_io::instructor {
                             response.set_macd_params(params);
                             final_response.merge(response);
                         }
-                        return final_response.queries(instruction.other.table);
+
+                        auto queries =  final_response.queries("DISCARD");
+                        // remove DISCARD queries
+                        queries.erase(std::remove_if(queries.begin(), queries.end(), [](const std::string &query) {
+                            return query.find("DISCARD") != std::string::npos;
+                        }), queries.end());
+                        return queries;
                     }
                     default:
                         break;
@@ -260,7 +282,6 @@ namespace simple_polygon_io::instructor {
                         break;
                 }
             }
-
             case Type::EMA: {
                 auto params = ema::EmaParams();
                 params.set_adjusted(ema::Adjusted::TRUE);
@@ -324,7 +345,6 @@ namespace simple_polygon_io::instructor {
             default:
                 return {};
         }
-        return {};
     }
 }
 
