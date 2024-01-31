@@ -1,49 +1,102 @@
 //
-// Created by Joaquin Bejar Garcia on 23/12/23.
+// Created by Joaquin Bejar Garcia on 31/1/24.
 //
 
-#include <simple_polygon_io/ohlc.h>
+#include <simple_polygon_io/aggregates.h>
 
-namespace simple_polygon_io::ohlc {
+namespace simple_polygon_io::aggregates {
 
-    void OhlcParams::set_date(const std::string &date) {
-        if (use_current_date) {
-            m_date = ::common::dates::get_current_date();
-        } else {
-            m_date = date;
-        }
+    void AggregatesParams::set_date(const std::string &date) {
+            m_from = date;
+            m_to = date;
     }
 
-    [[nodiscard]] const std::string &OhlcParams::get_date() const {
-        return m_date;
+    [[nodiscard]] const std::string &AggregatesParams::get_date() const {
+        return m_from;
     }
 
-    void OhlcParams::set_adjusted(const Adjusted &adjusted) {
+    void AggregatesParams::set_adjusted(const Adjusted &adjusted) {
         m_adjusted = adjusted;
     }
 
-    [[nodiscard]] const Adjusted &OhlcParams::get_adjusted() const {
+    [[nodiscard]] const Adjusted &AggregatesParams::get_adjusted() const {
         return m_adjusted;
     }
 
-    void OhlcParams::set_include_otc(const IncludeOtc &include_otc) {
-        m_include_otc = include_otc;
+    void AggregatesParams::set_stockticker(const std::string &stockticker) {
+        m_stockticker = stockticker;
     }
 
-    [[nodiscard]] const IncludeOtc &OhlcParams::get_include_otc() const {
-        return m_include_otc;
+    [[nodiscard]] const std::string &AggregatesParams::get_stockticker() const {
+        return m_stockticker;
     }
 
-    OhlcParams::operator ParamsMap() const {
+    void AggregatesParams::set_multiplier(size_t multiplier) {
+        m_multiplier = multiplier;
+    }
+
+    [[nodiscard]] size_t AggregatesParams::get_multiplier() const {
+        return m_multiplier;
+    }
+
+    void AggregatesParams::set_from(const std::string &from) {
+        m_from = from;
+    }
+
+    [[nodiscard]] const std::string &AggregatesParams::get_from() const {
+        return m_from;
+    }
+
+    void AggregatesParams::set_to(const std::string &to) {
+        m_to = to;
+    }
+
+    [[nodiscard]] const std::string &AggregatesParams::get_to() const {
+        return m_to;
+    }
+
+    void AggregatesParams::set_sort(Order sort) {
+        this->m_sort = sort;
+    }
+
+    [[nodiscard]] Order AggregatesParams::get_sort() const {
+        return m_sort;
+    }
+
+    void AggregatesParams::set_timespan (Timespan timespan) {
+        this->m_timespan = timespan;
+    }
+
+    [[nodiscard]] Timespan AggregatesParams::get_timespan() const {
+        return m_timespan;
+    }
+
+
+
+    AggregatesParams::operator ParamsMap() const {
         ParamsMap params;
         params["adjusted"] = get_adjusted_name(m_adjusted);
-        params["include_otc"] = get_include_otc_name(m_include_otc);
+        params["stockticker"] = m_stockticker;
+        params["multiplier"] = std::to_string(m_multiplier);
+        params["from"] = m_from;
+        params["to"] = m_to;
+        params["sort"] = get_order_name(m_sort);
+        params["timespan"] = get_timespan_name(m_timespan);
+
         for (auto it = params.begin(); it != params.end();) {
             if (it->second.empty()) {
                 it = params.erase(it);
             } else {
                 ++it;
             }
+        }
+        if (!params.contains("from") ||
+        !params.contains("to") ||
+        !params.contains("timespan") ||
+        !params.contains("stockticker") ||
+        !params.contains("multiplier")
+        ) {
+            throw std::runtime_error("AggregatesParams::operator ParamsMap() const: Some missing parameters");
         }
         return params;
     }
@@ -62,12 +115,8 @@ namespace simple_polygon_io::ohlc {
             t = j.at("t").get<size_t>();
             v = j.contains("v") ? j.at("v").get<size_t>() : 0;
             vw = j.contains("vw") ? j.at("vw").get<double>() : 0;
-            // otc field may exist
-            if (j.contains("otc")) {
-                otc = j.at("otc").get<bool>() ? 1 : 0;
-            }
         } catch (std::exception &e) {
-            throw std::runtime_error("Error parsing simple_polygon_io::ohlc::Result: " + std::string(e.what()));
+            throw std::runtime_error("Error parsing simple_polygon_io::aggregates::Result: " + std::string(e.what()));
         }
     }
 
@@ -82,7 +131,6 @@ namespace simple_polygon_io::ohlc {
               << "" << l << ", "
               << "" << c << ", "
               << "" << n << ", "
-              << "" << otc << ", "
               << "" << t << ", "
               << "" << v << ", "
               << "" << vw << ");";
@@ -104,13 +152,17 @@ namespace simple_polygon_io::ohlc {
         }
 
         try {
+            j.at("ticker").get_to(ticker);
             j.at("request_id").get_to(request_id);
             results.reserve(j.at("results").size());
-            for (const auto &result_json: j.at("results")) {
+            for ( auto &result_json: j.at("results")) {
+                json copy_result_json = result_json;
                 try {
-                    Result result(result_json);
+                    if (!result_json.contains("T"))
+                        copy_result_json["T"] = ticker;
+                    Result result(copy_result_json);
                     if (!result.T.empty()) {
-                        results.emplace_back(result_json);
+                        results.emplace_back(copy_result_json);
                     }
                 } catch (std::exception &e) {
                     error_found = true;
@@ -131,7 +183,7 @@ namespace simple_polygon_io::ohlc {
             }
         } catch (std::exception &e) {
             throw std::runtime_error(
-                    "Error parsing simple_polygon_io::ohlc::JsonResponse: " + std::string(e.what()));
+                    "Error parsing simple_polygon_io::aggregates::JsonResponse: " + std::string(e.what()));
         }
     }
 

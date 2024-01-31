@@ -136,9 +136,26 @@ target_include_directories(test_simple_polygon_io_ohlc
         ${NLOHMANN_JSON_INCLUDE}
         ${COMMON_INCLUDE}
 )
-
 target_link_libraries(test_simple_polygon_io_ohlc PRIVATE Catch2::Catch2WithMain)
 target_link_libraries(test_simple_polygon_io_ohlc PRIVATE
+        simple_logger
+        simple_config
+        common
+        simple_polygon_io
+)
+
+add_executable(test_simple_polygon_io_aggregates test_aggregates.cpp)
+target_include_directories(test_simple_polygon_io_aggregates
+        PRIVATE
+        ${SIMPLE_POLYGON_IO_INCLUDE}
+        ${SIMPLE_COLOR_INCLUDE}
+        ${SIMPLE_CONFIG_INCLUDE}
+        ${SIMPLE_LOGGER_INCLUDE}
+        ${NLOHMANN_JSON_INCLUDE}
+        ${COMMON_INCLUDE}
+)
+target_link_libraries(test_simple_polygon_io_aggregates PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(test_simple_polygon_io_aggregates PRIVATE
         simple_logger
         simple_config
         common
@@ -198,4 +215,24 @@ target_link_libraries(test_simple_polygon_io_ema PRIVATE
         simple_config
         common
         simple_polygon_io
+)
+
+add_executable(test_instruction_execution test_instruction_execution.cpp)
+target_include_directories(test_instruction_execution
+        PRIVATE
+        ${SIMPLE_POLYGON_IO_INCLUDE}
+        ${SIMPLE_COLOR_INCLUDE}
+        ${SIMPLE_CONFIG_INCLUDE}
+        ${SIMPLE_LOGGER_INCLUDE}
+        ${NLOHMANN_JSON_INCLUDE}
+        ${COMMON_INCLUDE}
+        ${TRADING_COMMON_INCLUDE}
+)
+target_link_libraries(test_instruction_execution PRIVATE Catch2::Catch2WithMain)
+target_link_libraries(test_instruction_execution PRIVATE
+        simple_logger
+        simple_config
+        common
+        simple_polygon_io
+        trading_common
 )

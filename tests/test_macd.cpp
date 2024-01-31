@@ -41,7 +41,7 @@ TEST_CASE("Operator std::map ", "[macd]") {
     }
 }
 
-TEST_CASE("empty json", "[ohlc]") {
+TEST_CASE("empty json", "[macd]") {
     SECTION("With ticker name") {
         json j;
         JsonResponse response = JsonResponse("A", j);

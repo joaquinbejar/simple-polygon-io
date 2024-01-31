@@ -198,10 +198,10 @@ namespace simple_polygon_io::macd {
             throw std::runtime_error("Error parsing simple_polygon_io::macd::Values: ticker was not set");
         }
         if (m_timespan == Timespan::NONE) {
-            throw std::runtime_error("Error parsing simple_polygon_io::macd::Values: Params was not set");
+            throw std::runtime_error("Error parsing simple_polygon_io::macd::Values: Params Timespan was not set");
         }
         if (m_series_type == SeriesType::NONE) {
-            throw std::runtime_error("Error parsing simple_polygon_io::macd::Values: Params was not set");
+            throw std::runtime_error("Error parsing simple_polygon_io::macd::Values: Params SeriesType was not set");
         }
         std::stringstream query;
         query << "REPLACE INTO `" + table +
