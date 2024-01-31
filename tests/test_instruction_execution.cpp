@@ -6,6 +6,8 @@
 #include <catch2/catch_test_macros.hpp>
 #include <simple_polygon_io/instruction_executrion.h>
 
+using namespace simple_polygon_io::instructor;
+
 TEST_CASE("Testing instructor_executor_context function", "[instruction_executrion]") {
 
     SECTION("Testing instructor_executor_context one ticker") {
