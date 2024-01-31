@@ -96,68 +96,39 @@ namespace simple_polygon_io::instructor {
                         return response.queries(instruction.other.table);
                     }
                     case Selector::ONE: {
-                        auto params = macd::MacdParams();
-                        params.set_adjusted(macd::Adjusted::TRUE);
-                        params.set_expand_underlying(macd::ExpandUnderlying::TRUE);
-                        params.set_timespan(macd::Timespan::DAY);
-                        params.set_series_type(macd::SeriesType::CLOSE);
-                        params.set_long_window(2);
-                        params.set_short_window(1);
-                        params.set_signal_window(1);
-
+                        client::AggregatesParams params;
+                        params.set_adjusted(sma::Adjusted::TRUE);
+                        params.set_timespan(sma::Timespan::DAY);
                         if (instruction.other.date.empty()) {
-                            params.set_timestamp(::common::dates::get_current_date());
+                            params.set_date(::common::dates::get_current_date());
                         } else {
-                            params.set_timestamp(instruction.other.date);
+                            params.set_date(instruction.other.date);
                         }
 
-                        // use MACD to get one ohlc
                         if (!instruction.tickers.empty()) {
                             params.set_stockticker(instruction.tickers[0]);
-
-                            macd::JsonResponse response = polygon_client.get_macd(params);
-                            response.set_macd_params(params);
-
-                            auto queries =  response.queries("DISCARD");
-                            // remove DISCARD queries
-                            queries.erase(std::remove_if(queries.begin(), queries.end(), [](const std::string &query) {
-                                return query.find("DISCARD") != std::string::npos;
-                            }), queries.end());
-                            return queries;
+                            auto response = polygon_client.get_aggregates(params);
+                            return response.queries(instruction.other.table);
                         } else {
                             return {};
                         }
                     }
                     case Selector::SET: {
-                        auto params = macd::MacdParams();
-                        params.set_adjusted(macd::Adjusted::TRUE);
-                        params.set_expand_underlying(macd::ExpandUnderlying::TRUE);
-                        params.set_timespan(macd::Timespan::DAY);
-                        params.set_series_type(macd::SeriesType::CLOSE);
-                        params.set_long_window(2);
-                        params.set_short_window(1);
-                        params.set_signal_window(1);
-
+                        client::AggregatesParams params;
+                        params.set_adjusted(sma::Adjusted::TRUE);
+                        params.set_timespan(sma::Timespan::DAY);
                         if (instruction.other.date.empty()) {
-                            params.set_timestamp(::common::dates::get_current_date());
+                            params.set_date(::common::dates::get_current_date());
                         } else {
-                            params.set_timestamp(instruction.other.date);
+                            params.set_date(instruction.other.date);
                         }
-
-                        macd::JsonResponse final_response;
+                        aggregates::JsonResponse final_response;
                         for (const auto &ticker: instruction.tickers) {
                             params.set_stockticker(ticker);
-                            macd::JsonResponse response = polygon_client.get_macd(params);
-                            response.set_macd_params(params);
+                            auto response = polygon_client.get_aggregates(params);
                             final_response.merge(response);
                         }
-
-                        auto queries =  final_response.queries("DISCARD");
-                        // remove DISCARD queries
-                        queries.erase(std::remove_if(queries.begin(), queries.end(), [](const std::string &query) {
-                            return query.find("DISCARD") != std::string::npos;
-                        }), queries.end());
-                        return queries;
+                        return final_response.queries(instruction.other.table);
                     }
                     default:
                         break;
