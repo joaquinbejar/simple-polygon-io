@@ -136,7 +136,7 @@ namespace simple_polygon_io::instructor {
             case Type::MACD: {
                 auto params = macd::MacdParams();
                 params.set_adjusted(macd::Adjusted::TRUE);
-                params.set_expand_underlying(macd::ExpandUnderlying::TRUE);
+                params.set_expand_underlying(macd::ExpandUnderlying::FALSE);
                 if (instruction.other.date.empty()) {
                     params.set_timestamp(::common::dates::get_current_date());
                 } else {
