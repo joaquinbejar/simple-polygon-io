@@ -28,6 +28,8 @@ namespace simple_polygon_io::instructor {
         [[nodiscard]] json to_json() const;
 
         void from_json(const json &j);
+
+        [[nodiscard]] bool validate() const;
     };
 
     queries_t instructor_executor_context(const Instructions<MetaInstruction> &instruction);
