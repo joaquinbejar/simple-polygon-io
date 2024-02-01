@@ -10,21 +10,72 @@ using namespace simple_polygon_io::instructor;
 
 TEST_CASE("Testing MetaInstruction", "[MetaInstruction]") {
     MetaInstruction metaInstruction;
-    json j = R"(
+
+    SECTION("Testing default constructor") {
+        json j = R"(
     {
         "date": "2024-01-30",
         "table": "OHLC",
         "gte": true
     }
     )"_json;
-    metaInstruction.from_json(j);
-    REQUIRE(metaInstruction.date == "2024-01-30");
-    REQUIRE(metaInstruction.table == "OHLC");
-    REQUIRE(metaInstruction.gte);
-    json to_json = metaInstruction.to_json();
-    REQUIRE(to_json["date"] == "2024-01-30");
-    REQUIRE(to_json["table"] == "OHLC");
-    REQUIRE(to_json["gte"]);
+        metaInstruction.from_json(j);
+        REQUIRE(metaInstruction.date == "2024-01-30");
+        REQUIRE(metaInstruction.table == "OHLC");
+        REQUIRE(metaInstruction.gte);
+        json to_json = metaInstruction.to_json();
+        REQUIRE(to_json["date"] == "2024-01-30");
+        REQUIRE(to_json["table"] == "OHLC");
+        REQUIRE(to_json["gte"]);
+    }
+
+    SECTION("Testing validate") {
+        json j = R"(
+    {
+        "date": "2024-01-30",
+        "table": "OHLC",
+        "gte": true
+    }
+    )"_json;
+        metaInstruction.from_json(j);
+        REQUIRE(metaInstruction.validate());
+    }
+
+    SECTION("Testing validate error 1") {
+        json j = R"(
+    {
+        "date": "2024-01-30",
+        "table": "",
+        "gte": true
+    }
+    )"_json;
+        metaInstruction.from_json(j);
+        REQUIRE_FALSE(metaInstruction.validate());
+    }
+
+    SECTION("Testing validate error 2") {
+        json j = R"(
+    [{
+        "date": "2024-01-30",
+        "table": "table",
+        "gte": true
+    }]
+    )"_json;
+        metaInstruction.from_json(j);
+        REQUIRE_FALSE(metaInstruction.validate());
+    }
+
+    SECTION("Testing validate error 3") {
+        json j = R"(
+    {
+        "date": "2024-01-30",
+        "gte": true
+    }
+    )"_json;
+        metaInstruction.from_json(j);
+        REQUIRE_FALSE(metaInstruction.validate());
+    }
+
 }
 
 TEST_CASE("Testing Instructions<MetaInstruction>", "[Instructions<MetaInstruction>]") {
@@ -59,7 +110,19 @@ TEST_CASE("Testing Instructions<MetaInstruction>", "[Instructions<MetaInstructio
     REQUIRE(to_json["other"]["date"] == "2024-01-30");
     REQUIRE(to_json["other"]["table"] == "Tickers");
     REQUIRE(to_json["other"]["gte"]);
-    REQUIRE(instruction.to_string() == R"({"other":{"date":"2024-01-30","gte":true,"table":"Tickers"},"selector":"one","tickers":["AAPL"],"timestamp":1706639471,"type":"ticker"})");
+    REQUIRE(instruction.to_string() ==
+            R"({"other":{"date":"2024-01-30","gte":true,"table":"Tickers"},"selector":"one","tickers":["AAPL"],"timestamp":1706639471,"type":"ticker"})");
+    Instructions<MetaInstruction> instruction1;
+    instruction1.from_string(
+            R"({"other":{"date":"2024-01-30","gte":true,"table":"Tickers"},"selector":"one","tickers":["AAPL"],"timestamp":1706639471,"type":"ticker"})");
+    REQUIRE(instruction1.type == Type::TICKER);
+    REQUIRE(instruction1.selector == Selector::ONE);
+    REQUIRE(instruction1.tickers.size() == 1);
+    REQUIRE(instruction1.tickers[0] == "AAPL");
+    REQUIRE(instruction1.timestamp == 1706639471);
+    REQUIRE(instruction1.other.date == "2024-01-30");
+    REQUIRE(instruction1.other.table == "Tickers");
+    REQUIRE(instruction1.other.gte);
 }
 
 TEST_CASE("Testing instructor_executor_context ticker function", "[instruction_execution]") {
@@ -123,7 +186,7 @@ TEST_CASE("Testing instructor_executor_context ticker function", "[instruction_e
         REQUIRE(instruction.validate());
         queries_t queries = instructor_executor_context(instruction);
 //        REQUIRE(queries.size() == 3);
-        for (auto &query : queries) {
+        for (auto &query: queries) {
             std::cout << query << std::endl;
         }
     }
@@ -173,7 +236,7 @@ TEST_CASE("Testing instructor_executor_context OHLC function", "[instruction_exe
         instruction.from_json(j);
         REQUIRE(instruction.validate());
         queries_t queries = instructor_executor_context(instruction);
-        for (auto &query : queries) {
+        for (auto &query: queries) {
             REQUIRE(query.find("OHLC") != std::string::npos);
             REQUIRE(!query.empty());
         }
@@ -218,7 +281,7 @@ TEST_CASE("Testing instructor_executor_context OHLC function", "[instruction_exe
         REQUIRE(instruction.validate());
         queries_t queries = instructor_executor_context(instruction);
         REQUIRE(queries.size() == 3);
-        for (auto &query : queries) {
+        for (auto &query: queries) {
             REQUIRE(query.find("OHLC") != std::string::npos);
             REQUIRE(!query.empty());
         }
@@ -269,7 +332,7 @@ TEST_CASE("Testing instructor_executor_context MACD function", "[instruction_exe
         instruction.from_json(j);
         REQUIRE(instruction.validate());
         queries_t queries = instructor_executor_context(instruction);
-        for (auto &query : queries) {
+        for (auto &query: queries) {
 //            std::cout << query << std::endl;
             REQUIRE(query.find("MACD") != std::string::npos);
             REQUIRE(!query.empty());
@@ -314,7 +377,7 @@ TEST_CASE("Testing instructor_executor_context MACD function", "[instruction_exe
         REQUIRE(instruction.validate());
         queries_t queries = instructor_executor_context(instruction);
         REQUIRE(queries.size() == 6);
-        for (auto &query : queries) {
+        for (auto &query: queries) {
             REQUIRE(query.find("MACD") != std::string::npos);
             REQUIRE(!query.empty());
         }
@@ -367,7 +430,7 @@ TEST_CASE("Testing instructor_executor_context SMA function", "[instruction_exec
         instruction.from_json(j);
         REQUIRE(instruction.validate());
         queries_t queries = instructor_executor_context(instruction);
-        for (auto &query : queries) {
+        for (auto &query: queries) {
             REQUIRE(query.find("SMA") != std::string::npos);
             REQUIRE(!query.empty());
         }
@@ -411,7 +474,7 @@ TEST_CASE("Testing instructor_executor_context SMA function", "[instruction_exec
         REQUIRE(instruction.validate());
         queries_t queries = instructor_executor_context(instruction);
         REQUIRE(queries.size() == 24);
-        for (auto &query : queries) {
+        for (auto &query: queries) {
             REQUIRE(query.find("SMA") != std::string::npos);
             REQUIRE(!query.empty());
         }
@@ -461,7 +524,7 @@ TEST_CASE("Testing instructor_executor_context EMA function", "[instruction_exec
         instruction.from_json(j);
         REQUIRE(instruction.validate());
         queries_t queries = instructor_executor_context(instruction);
-        for (auto &query : queries) {
+        for (auto &query: queries) {
             REQUIRE(query.find("EMA") != std::string::npos);
             REQUIRE(!query.empty());
         }
@@ -505,7 +568,7 @@ TEST_CASE("Testing instructor_executor_context EMA function", "[instruction_exec
         REQUIRE(instruction.validate());
         queries_t queries = instructor_executor_context(instruction);
         REQUIRE(queries.size() == 24);
-        for (auto &query : queries) {
+        for (auto &query: queries) {
             REQUIRE(query.find("EMA") != std::string::npos);
             REQUIRE(!query.empty());
         }

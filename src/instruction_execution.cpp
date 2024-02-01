@@ -21,6 +21,24 @@ namespace simple_polygon_io::instructor {
             gte = j.at("gte").get<bool>();
     }
 
+    bool MetaInstruction::validate() const {
+        if (table.empty())
+            return false;
+        json j = to_json();
+        if (j.empty())
+            return false;
+        if (!j.contains("date"))
+            return false;
+        if (!j.contains("table"))
+            return false;
+        if (!j.contains("gte"))
+            return false;
+        if (j.is_array())
+            return false;
+
+        return true;
+    }
+
     queries_t instructor_executor_context(const Instructions<MetaInstruction> &instruction) {
         config::PolygonIOConfig config;
         client::PolygonIOClient polygon_client(config);
