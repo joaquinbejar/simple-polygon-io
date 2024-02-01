@@ -8,6 +8,60 @@
 
 using namespace simple_polygon_io::instructor;
 
+TEST_CASE("Testing MetaInstruction", "[MetaInstruction]") {
+    MetaInstruction metaInstruction;
+    json j = R"(
+    {
+        "date": "2024-01-30",
+        "table": "OHLC",
+        "gte": true
+    }
+    )"_json;
+    metaInstruction.from_json(j);
+    REQUIRE(metaInstruction.date == "2024-01-30");
+    REQUIRE(metaInstruction.table == "OHLC");
+    REQUIRE(metaInstruction.gte);
+    json to_json = metaInstruction.to_json();
+    REQUIRE(to_json["date"] == "2024-01-30");
+    REQUIRE(to_json["table"] == "OHLC");
+    REQUIRE(to_json["gte"]);
+}
+
+TEST_CASE("Testing Instructions<MetaInstruction>", "[Instructions<MetaInstruction>]") {
+    Instructions<MetaInstruction> instruction;
+    json j = R"(
+        {
+            "type": "ticker",
+            "selector": "one",
+            "tickers": ["AAPL"],
+            "timestamp": 1706639471,
+            "other": {
+                "table": "Tickers",
+                "date": "2024-01-30",
+                "gte": true
+            }
+        }
+        )"_json;
+    instruction.from_json(j);
+    REQUIRE(instruction.type == Type::TICKER);
+    REQUIRE(instruction.selector == Selector::ONE);
+    REQUIRE(instruction.tickers.size() == 1);
+    REQUIRE(instruction.tickers[0] == "AAPL");
+    REQUIRE(instruction.timestamp == 1706639471);
+    REQUIRE(instruction.other.date == "2024-01-30");
+    REQUIRE(instruction.other.table == "Tickers");
+    REQUIRE(instruction.other.gte);
+    json to_json = instruction.to_json();
+    REQUIRE(to_json["type"] == "ticker");
+    REQUIRE(to_json["selector"] == "one");
+    REQUIRE(to_json["tickers"] == json({"AAPL"}));
+    REQUIRE(to_json["timestamp"] == 1706639471);
+    REQUIRE(to_json["other"]["date"] == "2024-01-30");
+    REQUIRE(to_json["other"]["table"] == "Tickers");
+    REQUIRE(to_json["other"]["gte"]);
+
+}
+
 TEST_CASE("Testing instructor_executor_context ticker function", "[instruction_execution]") {
 
     SECTION("Testing instructor_executor_context one ticker") {
@@ -28,6 +82,10 @@ TEST_CASE("Testing instructor_executor_context ticker function", "[instruction_e
         queries_t queries = instructor_executor_context(instruction);
         REQUIRE(queries.size() == 1);
         std::cout << queries[0] << std::endl;
+        for (auto &query: queries) {
+            REQUIRE(query.find("Tickers") != std::string::npos);
+            REQUIRE(!query.empty());
+        }
     }
 
     SECTION("Testing instructor_executor_context one ticker error") {
@@ -87,6 +145,10 @@ TEST_CASE("Testing instructor_executor_context ticker function", "[instruction_e
 //        REQUIRE(instruction.validate());
 //        queries_t queries = instructor_executor_context(instruction);
 //        REQUIRE(!queries.empty());
+//        for (auto &query: queries) {
+//            REQUIRE(query.find("Tickers") != std::string::npos);
+//            REQUIRE(!query.empty());
+//        }
 //    }
 
 
@@ -278,6 +340,8 @@ TEST_CASE("Testing instructor_executor_context MACD function", "[instruction_exe
         REQUIRE(!queries.empty());
         for (auto &query: queries) {
             // query contains "OHLC"
+            if (query.find("OHLC") == std::string::npos)
+                std::cout << query << std::endl;
             REQUIRE(query.find("OHLC") != std::string::npos);
             REQUIRE(!query.empty());
         }
