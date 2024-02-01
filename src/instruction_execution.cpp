@@ -7,10 +7,9 @@
 namespace simple_polygon_io::instructor {
 
     json MetaInstruction::to_json() const {
-        return {"date", date,
-                "table", table,
-                "gte", gte
-        };
+        return {{"date",  date},
+                {"table", table},
+                {"gte",   gte}};
     }
 
     void MetaInstruction::from_json(const json &j) {
@@ -77,10 +76,16 @@ namespace simple_polygon_io::instructor {
                         client::AggregatesParams params;
                         params.set_adjusted(sma::Adjusted::TRUE);
                         params.set_timespan(sma::Timespan::DAY);
+
                         if (instruction.other.date.empty()) {
                             params.set_date(::common::dates::get_current_date());
                         } else {
-                            params.set_date(instruction.other.date);
+                            if (instruction.other.gte) {
+                                params.set_from(instruction.other.date);
+                                params.set_to(::common::dates::get_current_date());
+                            } else {
+                                params.set_date(instruction.other.date);
+                            }
                         }
 
                         if (!instruction.tickers.empty()) {
@@ -98,7 +103,12 @@ namespace simple_polygon_io::instructor {
                         if (instruction.other.date.empty()) {
                             params.set_date(::common::dates::get_current_date());
                         } else {
-                            params.set_date(instruction.other.date);
+                            if (instruction.other.gte) {
+                                params.set_from(instruction.other.date);
+                                params.set_to(::common::dates::get_current_date());
+                            } else {
+                                params.set_date(instruction.other.date);
+                            }
                         }
                         aggregates::JsonResponse final_response;
                         for (const auto &ticker: instruction.tickers) {
@@ -119,7 +129,10 @@ namespace simple_polygon_io::instructor {
                 if (instruction.other.date.empty()) {
                     params.set_timestamp(::common::dates::get_current_date());
                 } else {
-                    params.set_timestamp(instruction.other.date);
+                    if (instruction.other.gte)
+                        params.set_timestamp_gte(instruction.other.date);
+                    else
+                        params.set_timestamp(instruction.other.date);
                 }
 
                 switch (instruction.selector) {
