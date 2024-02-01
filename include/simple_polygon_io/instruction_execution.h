@@ -29,7 +29,7 @@ namespace simple_polygon_io::instructor {
 
         void from_json(const json &j);
 
-        bool validate() const;
+        [[nodiscard]] bool validate() const;
     };
 
     queries_t instructor_executor_context(const Instructions<MetaInstruction> &instruction);
