@@ -59,7 +59,7 @@ TEST_CASE("Testing Instructions<MetaInstruction>", "[Instructions<MetaInstructio
     REQUIRE(to_json["other"]["date"] == "2024-01-30");
     REQUIRE(to_json["other"]["table"] == "Tickers");
     REQUIRE(to_json["other"]["gte"]);
-
+    REQUIRE(instruction.to_string() == R"({"other":{"date":"2024-01-30","gte":true,"table":"Tickers"},"selector":"one","tickers":["AAPL"],"timestamp":1706639471,"type":"ticker"})");
 }
 
 TEST_CASE("Testing instructor_executor_context ticker function", "[instruction_execution]") {
