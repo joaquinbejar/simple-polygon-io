@@ -124,7 +124,7 @@ namespace simple_polygon_io::aggregates {
         std::stringstream query;
         query << "REPLACE INTO `" + table +
                  "` (`ticker`, `open`, `high`, `low`, `close`, `transactions`, "
-                 "`otc`, `timestamp`, `volume`, `volume_weighted_price`) VALUES ("
+                 "`timestamp`, `volume`, `volume_weighted_price`) VALUES ("
               << "'" << T << "', "
               << "" << o << ", "
               << "" << h << ", "
