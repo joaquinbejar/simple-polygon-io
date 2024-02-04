@@ -237,6 +237,7 @@ TEST_CASE("Testing instructor_executor_context OHLC function", "[instruction_exe
         REQUIRE(instruction.validate());
         queries_t queries = instructor_executor_context(instruction);
         for (auto &query: queries) {
+            std::cout << query << std::endl;
             REQUIRE(query.find("OHLC") != std::string::npos);
             REQUIRE(!query.empty());
         }
