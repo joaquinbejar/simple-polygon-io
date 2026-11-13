@@ -12,3 +12,18 @@ Simple library to handle call to Polygon.io REST API
 
 - [x] [Stocks](https://polygon.io/docs/stocks/getting-started)
   - [x] [Tickers](https://polygon.io/docs/stocks/get_v3_reference_tickers)
+
+## Contribution and Contact
+
+### **Contact Information**
+- **Author**: Joaquín Béjar García
+- **Email**: jb@taunais.com
+- **Telegram**: [@joaquin_bejar](https://t.me/joaquin_bejar)
+- **Repository**: <https://github.com/joaquinbejar/simple-polygon-io>
+
+<!-- related-projects:start -->
+## Related projects
+
+No other repositories by the same author depend on this project, and it depends on none of them. See all repositories at <https://github.com/joaquinbejar?tab=repositories>.
+
+<!-- related-projects:end -->
